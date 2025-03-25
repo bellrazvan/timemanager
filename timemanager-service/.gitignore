@@ -1,0 +1,5 @@
+# Gradle/Spring Boot
+build/
+*.log
+.gradle/
+gradlew.bat
