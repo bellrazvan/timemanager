@@ -2,6 +2,9 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.4'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'checkstyle'
+	id 'pmd'
+	id 'jacoco'
 }
 
 group = 'com.time'
@@ -27,15 +30,61 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation("io.jsonwebtoken:jjwt-api:0.12.6")
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.h2database:h2' //TODO switch to PostgreSQL later
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
+	ignoreFailures = false
+}
+
+checkstyle {
+	toolVersion = '10.23.0'
+	maxWarnings = 0
+	ignoreFailures = false
+}
+
+pmd {
+	toolVersion = '7.12.0'
+	ignoreFailures = false
+}
+
+jacoco {
+	toolVersion = '0.8.13'
+}
+
+check.dependsOn checkstyleMain, checkstyleTest, pmdMain, pmdTest, test
+
+test.mustRunAfter checkstyleMain, pmdMain, checkstyleTest, pmdTest
+
+build.dependsOn check
+
+jacocoTestCoverageVerification {
+	dependsOn test
+	violationRules {
+		rule {
+			element = 'CLASS'
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.8
+			}
+			limit {
+				counter = 'BRANCH'
+				value = 'COVEREDRATIO'
+				minimum = 0.7
+			}
+		}
+		rule {
+			element = 'BUNDLE'
+			excludes = ['*.test.*', '*.integration.*']
+		}
+	}
 }
