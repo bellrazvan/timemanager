@@ -1,61 +1,85 @@
 package com.time.timemanager.authentication;
 
 import com.time.timemanager.security.JwtUtil;
+import com.time.timemanager.security.TokenBlacklistService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.authentication.AuthenticationManager;
 
-import java.util.Map;
+import java.util.Collections;
 
-@RequiredArgsConstructor
+
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
-    private final AuthService authService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenBlacklistService tokenBlacklistService;
+    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user) {
-        User registeredUser = authService.register(user);
-        return ResponseEntity.ok(registeredUser);
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        if (this.userRepository.findByEmail(request.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Email already in use");
+        }
+
+        final User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(this.passwordEncoder.encode(request.getPassword()));
+        this.userRepository.save(user);
+
+        return ResponseEntity.ok("User registered successfully");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Map<String, String> credentials) {
-        String token = authService.login(credentials.get("username"), credentials.get("password"));
-        return ResponseEntity.ok(token);
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            final Authentication authentication = this.authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(), request.getPassword()
+                    )
+            );
+
+            final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            final String jwt = this.jwtUtil.generateToken(userDetails);
+
+            return ResponseEntity.ok(Collections.singletonMap("token", jwt));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials for user with email: " + request.getEmail());
+        }
     }
 
-    @PostMapping("/reset-password-request")
-    public ResponseEntity<Void> requestPasswordReset(@RequestBody Map<String, String> request) {
-        authService.requestPasswordReset(request.get("email"));
-        return ResponseEntity.ok().build();
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            final String token = authorizationHeader.substring(7);
+            this.tokenBlacklistService.blacklistToken(token);
+            return ResponseEntity.ok("Logged out successfully");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<Void> resetPassword(@RequestParam String token, @RequestBody Map<String, String> request) {
-        authService.resetPassword(token, request.get("newPassword"));
-        return ResponseEntity.ok().build();
+    @Data
+    private static class RegisterRequest {
+        private String username;
+        private String email;
+        private String password;
     }
 
-    @PutMapping("/profile")
-    public ResponseEntity<User> updateProfile(@RequestBody User updatedUser, Authentication auth) {
-        User user = (User) auth.getPrincipal();
-        User updated = authService.updateProfile(user.getId(), updatedUser);
-        return ResponseEntity.ok(updated);
-    }
-
-    @DeleteMapping("/account")
-    public ResponseEntity<Void> deleteAccount(Authentication auth) {
-        User user = (User) auth.getPrincipal();
-        authService.deleteAccount(user.getId());
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<String> refreshToken(@RequestHeader("Authorization") String token) {
-        String newToken = jwtUtil.refreshToken(token.substring(7));
-        return ResponseEntity.ok(newToken);
+    @Data
+    private static class LoginRequest {
+        private String email;
+        private String password;
     }
 }
