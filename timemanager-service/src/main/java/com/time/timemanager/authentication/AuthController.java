@@ -1,12 +1,12 @@
 package com.time.timemanager.authentication;
 
 import com.time.timemanager.security.JwtUtil;
-import com.time.timemanager.security.TokenBlacklistService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.authentication.AuthenticationManager;
 
-import java.util.Collections;
+import java.time.Duration;
+import java.util.Map;
 
 
 @RestController
@@ -23,9 +24,9 @@ import java.util.Collections;
 public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TokenBlacklistService tokenBlacklistService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -44,30 +45,51 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        try {
-            final Authentication authentication = this.authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(), request.getPassword()
-                    )
-            );
+        final Authentication auth = this.authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
 
-            final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            final String jwt = this.jwtUtil.generateToken(userDetails);
+        final UserDetails user = (UserDetails) auth.getPrincipal();
+        final String accessToken = this.jwtUtil.generateAccessToken(user);
+        final String refreshToken = this.jwtUtil.generateRefreshToken(user);
 
-            return ResponseEntity.ok(Collections.singletonMap("token", jwt));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials for user with email: " + request.getEmail());
+        final ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/auth/refresh")
+                .maxAge(Duration.ofDays(7))
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(Map.of("accessToken", accessToken));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        if (refreshToken == null || this.jwtUtil.isInvalidToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
+
+        final String username = this.jwtUtil.getUsernameFromToken(refreshToken);
+        final UserDetails user = this.customUserDetailsService.loadUserByUsername(username);
+
+        final String newAccessToken = this.jwtUtil.generateAccessToken(user);
+        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorizationHeader) {
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            final String token = authorizationHeader.substring(7);
-            this.tokenBlacklistService.blacklistToken(token);
-            return ResponseEntity.ok("Logged out successfully");
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
+    public ResponseEntity<?> logout() {
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/auth/refresh")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body("Successfully logged out");
     }
 
     @Data

@@ -2,6 +2,8 @@ package com.time.timemanager.tasks;
 
 import com.time.timemanager.authentication.User;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
-    private static final String LOW = "LOW";
-    private static final String MEDIUM = "MEDIUM";
-    private static final String HIGH = "HIGH";
-    private static final int HIGH_PRIORITY_THRESHOLD = 1;
-    private static final int MEDIUM_PRIORITY_THRESHOLD = 3;
+    private static final Logger LOG = LogManager.getLogger(TaskService.class);
 
     public Task createTask(Task task, User user) {
         if (task.getTitle() == null || task.getTitle().trim().isEmpty()) {
@@ -26,7 +24,7 @@ public class TaskService {
         task.setUser(user);
         task.setStatus("TODO"); // default status
         if (task.getPriority() == null)
-            task.setPriority(MEDIUM); // default priority
+            task.setPriority("LOW"); // default priority
         return this.taskRepository.save(task);
     }
 
@@ -72,25 +70,13 @@ public class TaskService {
     }
 
     public boolean isOverdue(Task task) {
-        return task.getDueDate() != null && task.getDueDate().isBefore(LocalDate.now()) && !"COMPLETED".equals(task.getStatus());
+        return task.getDueDate() != null
+                && task.getDueDate().isBefore(LocalDate.now())
+                && !"COMPLETED".equals(task.getStatus());
     }
 
     public List<Task> getTasksByStatus(Long userId, String status) {
         return this.taskRepository.findByUserIdAndStatus(userId, status);
-    }
-
-    public void adjustPriorityBasedOnDueDate(Task task) {
-        if (task.getDueDate() != null) {
-            long daysUntilDue = LocalDate.now().until(task.getDueDate()).getDays();
-
-            if (daysUntilDue <= HIGH_PRIORITY_THRESHOLD)
-                task.setPriority(HIGH);
-            else if (daysUntilDue <= MEDIUM_PRIORITY_THRESHOLD)
-                task.setPriority(MEDIUM);
-            else
-                task.setPriority(LOW);
-            this.taskRepository.save(task);
-        }
     }
 
     @Scheduled(fixedRate = 86400000) // runs daily
@@ -99,7 +85,7 @@ public class TaskService {
                 LocalDate.now(), LocalDate.now().plusDays(1));
         upcomingTasks.forEach(task -> {
             //TODO add logic for email notifications - JavaMailSender
-            System.out.println("Reminder: " + task.getTitle() + " due tomorrow!");
+            LOG.warn("Reminder: " + task.getTitle() + " due tomorrow!");
         });
     }
 }
