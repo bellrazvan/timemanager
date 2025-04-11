@@ -1,7 +1,7 @@
 package com.time.timemanager.authentication;
 
 import com.time.timemanager.security.JwtUtil;
-import lombok.Data;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,8 +29,8 @@ public class AuthController {
     private final CustomUserDetailsService customUserDetailsService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        if (this.userRepository.findByEmail(request.getEmail()).isPresent()) {
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request) {
+        if (this.userRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().body("Email already in use");
         }
 
@@ -44,7 +44,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest request) {
         final Authentication auth = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
@@ -80,7 +80,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
-        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+        final ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
                 .secure(true)
                 .path("/auth/refresh")
@@ -90,18 +90,5 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
                 .body("Successfully logged out");
-    }
-
-    @Data
-    private static class RegisterRequest {
-        private String username;
-        private String email;
-        private String password;
-    }
-
-    @Data
-    private static class LoginRequest {
-        private String email;
-        private String password;
     }
 }
