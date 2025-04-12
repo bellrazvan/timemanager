@@ -4,6 +4,7 @@ import com.time.timemanager.authentication.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,8 +26,9 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody Task task, Authentication auth) {
-        final User user = (User) auth.getPrincipal();
-        final Task createdTask = this.taskService.createTask(task, user);
+        final String email = ((UserDetails) auth.getPrincipal()).getUsername(); //TODO make TaskController more compact + change TaskService implementation
+        final Task createdTask = this.taskService.createTask(task, email);
+
         return ResponseEntity.ok(createdTask);
     }
 
@@ -34,6 +36,7 @@ public class TaskController {
     public ResponseEntity<List<Task>> getTasks(Authentication auth) {
         final User user = (User) auth.getPrincipal();
         final List<Task> tasks = this.taskService.getTasks(user.getId());
+
         return ResponseEntity.ok(tasks);
     }
 
@@ -41,6 +44,7 @@ public class TaskController {
     public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
         final Task task = this.taskService.getTaskById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Task " + id + " not found"));
+
         return ResponseEntity.ok(task);
     }
 
@@ -48,6 +52,7 @@ public class TaskController {
     public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task, Authentication auth) {
         final User user = (User) auth.getPrincipal();
         final Task updatedTask = this.taskService.updateTask(id, task, user);
+
         return ResponseEntity.ok(updatedTask);
     }
 

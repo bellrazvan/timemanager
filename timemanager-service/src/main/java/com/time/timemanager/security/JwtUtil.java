@@ -33,6 +33,14 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String generatePasswordResetToken(String email) {
+        return Jwts.builder()
+                .setSubject(email)
+                .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15 min
+                .signWith(SignatureAlgorithm.HS256, this.secret)
+                .compact();
+    }
+
     private boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()

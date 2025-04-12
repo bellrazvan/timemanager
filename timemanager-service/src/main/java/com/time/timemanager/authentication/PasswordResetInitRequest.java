@@ -3,11 +3,8 @@ package com.time.timemanager.authentication;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record LoginRequest (
+public record PasswordResetInitRequest(
         @NotBlank(message = "Email is required")
         @Email(message = "Invalid email format")
-        String email,
-
-        @NotBlank(message = "Password is required")
-        String password
+        String email
 ) {}

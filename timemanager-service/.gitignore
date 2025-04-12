@@ -3,3 +3,4 @@ build/
 *.log
 .gradle/
 gradlew.bat
+.env

@@ -1,10 +1,14 @@
 package com.time.timemanager.tasks;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.time.timemanager.authentication.User;
+import com.time.timemanager.authentication.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,17 +18,23 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
+    private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
     private final TaskRepository taskRepository;
     private static final Logger LOG = LogManager.getLogger(TaskService.class);
 
-    public Task createTask(Task task, User user) {
+    public Task createTask(Task task, String username) {
+        final User user = this.userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         if (task.getTitle() == null || task.getTitle().trim().isEmpty()) {
             throw new IllegalArgumentException("Task title cannot be empty");
         }
         task.setUser(user);
         task.setStatus("TODO"); // default status
-        if (task.getPriority() == null)
+        if (task.getPriority() == null) {
             task.setPriority("LOW"); // default priority
+        }
         return this.taskRepository.save(task);
     }
 
@@ -44,19 +54,11 @@ public class TaskService {
             throw new SecurityException("User " + user.getId() + " doesn't have permission to update task " + task.getId());
         }
 
-        if (updatedTask.getTitle() != null)
-            task.setTitle(updatedTask.getTitle());
-        if (updatedTask.getDescription() != null)
-            task.setDescription(updatedTask.getDescription());
-        if (updatedTask.getDueDate() != null)
-            task.setDueDate(updatedTask.getDueDate());
-        if (updatedTask.getStatus() != null)
-            task.setStatus(updatedTask.getStatus());
-        if (updatedTask.getPriority() != null)
-            task.setPriority(updatedTask.getPriority());
-        if (updatedTask.getCategory() != null)
-            task.setCategory(updatedTask.getCategory());
-
+        try {
+            this.objectMapper.updateValue(task, updatedTask);
+        } catch (JsonMappingException e) {
+            LOG.error("Error updating task " + id + ": " + e.getMessage());
+        }
         return this.taskRepository.save(task);
     }
 

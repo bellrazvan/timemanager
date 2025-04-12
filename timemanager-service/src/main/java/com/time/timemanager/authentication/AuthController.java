@@ -1,8 +1,10 @@
 package com.time.timemanager.authentication;
 
+import com.time.timemanager.mail.EmailService;
 import com.time.timemanager.security.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -16,37 +18,41 @@ import org.springframework.security.authentication.AuthenticationManager;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
+    @Value("${frontend.url}")
+    private String FRONTEND_URL;
+    private final JwtUtil jwtUtil;
+    private final EmailService emailService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request) {
-        if (this.userRepository.existsByEmail(request.getEmail())) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        if (this.userRepository.existsByEmail(request.email())) {
             return ResponseEntity.badRequest().body("Email already in use");
         }
 
         final User user = new User();
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
-        user.setPassword(this.passwordEncoder.encode(request.getPassword()));
+        user.setUsername(request.username());
+        user.setEmail(request.email());
+        user.setPassword(this.passwordEncoder.encode(request.password()));
         this.userRepository.save(user);
 
         return ResponseEntity.ok("User registered successfully");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         final Authentication auth = this.authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
 
         final UserDetails user = (UserDetails) auth.getPrincipal();
@@ -90,5 +96,41 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
                 .body("Successfully logged out");
+    }
+
+    @PostMapping("/reset-request")
+    public ResponseEntity<?> requestPasswordReset(@Valid @RequestBody PasswordResetInitRequest request) {
+        final Optional<User> userOpt = this.userRepository.findByEmail(request.email());
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.ok("If the email exists, a reset link will be sent");
+        }
+
+        final String token = this.jwtUtil.generatePasswordResetToken(request.email());
+        final String resetLink = FRONTEND_URL + "/reset-password?token=" + token;
+
+        this.emailService.sendPasswordResetEmail(request.email(), userOpt.get().getUsername(), resetLink);
+
+        return ResponseEntity.ok("If the email exists, a reset link will be sent");
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody PasswordResetSubmitRequest request) {
+        final String email;
+        try {
+            email = this.jwtUtil.getUsernameFromToken(request.token());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid or expired token");
+        }
+
+        final Optional<User> userOpt = this.userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
+
+        final User user = userOpt.get();
+        user.setPassword(this.passwordEncoder.encode(request.newPassword()));
+        this.userRepository.save(user);
+
+        return ResponseEntity.ok("Password updated successfully");
     }
 }
