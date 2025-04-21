@@ -1,4 +1,4 @@
-package com.time.timemanager.api;
+package com.time.timemanager.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

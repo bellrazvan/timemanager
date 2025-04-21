@@ -1,4 +1,4 @@
-package com.time.timemanager.authentication;
+package com.time.timemanager.authentication.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

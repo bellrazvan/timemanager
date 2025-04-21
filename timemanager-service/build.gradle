@@ -2,8 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.4'
 	id 'io.spring.dependency-management' version '1.1.7'
-//	id 'checkstyle'
-//	id 'pmd'
 }
 
 group = 'com.time'
@@ -34,14 +32,18 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'io.github.cdimascio:java-dotenv:5.2.2'
-	compileOnly 'org.projectlombok:lombok'
+
+	implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+	implementation 'org.hibernate:hibernate-core:6.3.1.Final'
+
+	compileOnly 'org.projectlombok:lombok:1.18.30'
+	annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	runtimeOnly 'com.h2database:h2' //TODO switch to PostgreSQL later
-	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -51,35 +53,3 @@ test {
 	useJUnitPlatform()
 	ignoreFailures = false
 }
-
-//checkstyle {
-//	toolVersion = '10.23.0'
-//	config = resources.text.fromUri('https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/google_checks.xml')
-//	maxWarnings = 0
-//	ignoreFailures = true
-//	sourceSets = [sourceSets.main]
-//}
-//
-//checkstyleMain {
-//	source = sourceSets.main.java
-//	exclude '**/test/**'
-//}
-//
-//pmd {
-//	toolVersion = '7.6.0'
-//	ignoreFailures = false
-//	ruleSetConfig = resources.text.fromString("") //TODO remove
-//	ruleSets = [] //TODO remove
-//	sourceSets = [sourceSets.main]
-//}
-//
-//pmdMain {
-////	source = sourceSets.main.java
-//	exclude '**/test/**'
-//}
-//
-//check.dependsOn checkstyleMain, pmdMain, test
-//
-//test.mustRunAfter checkstyleMain, pmdMain
-//
-//build.dependsOn check

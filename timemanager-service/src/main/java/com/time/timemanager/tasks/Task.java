@@ -27,14 +27,16 @@ public class Task {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status; //TODO enum - IN_PROGRESS, COMPLETED
+    private Status status;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "priority")
-    private String priority; //TODO enum - LOW, MEDIUM, HIGH
+    private Priority priority;
 
     @Column(name = "category")
-    private String category;
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

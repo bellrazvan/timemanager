@@ -1,6 +1,7 @@
-package com.time.timemanager.authentication;
+package com.time.timemanager.config;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,5 +23,10 @@ public class GlobalExceptionHandler {
         });
 
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(HttpMessageConversionException.class)
+    public ResponseEntity<?> handleEnumBindingError(HttpMessageConversionException ex) {
+        return ResponseEntity.badRequest().body("Invalid value for enum field: " + ex.getMessage());
     }
 }

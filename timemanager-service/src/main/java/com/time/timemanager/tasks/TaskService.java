@@ -1,9 +1,11 @@
 package com.time.timemanager.tasks;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.time.timemanager.authentication.User;
 import com.time.timemanager.authentication.UserRepository;
+import com.time.timemanager.tasks.dtos.TaskCreateRequest;
+import com.time.timemanager.tasks.dtos.TaskMapper;
+import com.time.timemanager.tasks.dtos.TaskResponse;
+import com.time.timemanager.tasks.dtos.TaskUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,35 +20,42 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
-    private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
     private static final Logger LOG = LogManager.getLogger(TaskService.class);
 
-    public Task createTask(Task task, String username) {
-        final User user = this.userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        if (task.getTitle() == null || task.getTitle().trim().isEmpty()) {
-            throw new IllegalArgumentException("Task title cannot be empty");
-        }
+    public TaskResponse createTask(TaskCreateRequest request, String email) {
+        final User user = this.userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + " not found"));
+        final Task task = this.taskMapper.toTask(request);
         task.setUser(user);
-        task.setStatus("TODO"); // default status
+
+        task.setStatus(Status.TODO); // default status
         if (task.getPriority() == null) {
-            task.setPriority("LOW"); // default priority
+            task.setPriority(Priority.LOW); // default priority
         }
-        return this.taskRepository.save(task);
+        if (task.getCategory() == null) {
+            task.setCategory(Category.OTHER); //default category
+        }
+
+        return this.taskMapper.toTaskResponse(this.taskRepository.save(task));
     }
 
-    public List<Task> getTasks(Long userId) {
-        return this.taskRepository.findByUserId(userId);
+    public List<TaskResponse> getTasks(String email) {
+        return this.taskRepository.findByUserEmail(email).stream()
+                .map(this.taskMapper::toTaskResponse)
+                .toList();
     }
 
-    public Optional<Task> getTaskById(Long id) {
-        return this.taskRepository.findById(id);
+    public Optional<TaskResponse> getTaskById(Long id, String email) {
+        return this.taskRepository.findByIdAndUserEmail(id, email)
+                .map(this.taskMapper::toTaskResponse);
     }
 
-    public Task updateTask(Long id, Task updatedTask, User user) {
+    public TaskResponse updateTask(Long id, TaskUpdateRequest request, String email) {
+        final User user = this.userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + " not found"));
         final Task task = this.taskRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Task " + id + " not found"));
 
@@ -54,40 +63,47 @@ public class TaskService {
             throw new SecurityException("User " + user.getId() + " doesn't have permission to update task " + task.getId());
         }
 
-        try {
-            this.objectMapper.updateValue(task, updatedTask);
-        } catch (JsonMappingException e) {
-            LOG.error("Error updating task " + id + ": " + e.getMessage());
-        }
-        return this.taskRepository.save(task);
+        this.taskMapper.updateTaskFromRequest(request, task);
+
+        return this.taskMapper.toTaskResponse(this.taskRepository.save(task));
     }
 
-    public void deleteTask(Long id, User user) {
+    public void deleteTask(Long id, String email) {
+        final User user = this.userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + " not found"));
         final Task task = this.taskRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Task " + id + " not found"));
+
         if (!task.getUser().getId().equals(user.getId())) {
             throw new SecurityException("User " + user.getId() + " doesn't have permission to delete task " + task.getId());
         }
+
         this.taskRepository.delete(task);
     }
 
     public boolean isOverdue(Task task) {
         return task.getDueDate() != null
                 && task.getDueDate().isBefore(LocalDate.now())
-                && !"COMPLETED".equals(task.getStatus());
+                && !Status.DONE.equals(task.getStatus());
     }
 
-    public List<Task> getTasksByStatus(Long userId, String status) {
-        return this.taskRepository.findByUserIdAndStatus(userId, status);
+    public List<TaskResponse> getTasksByStatus(String status, String email) {
+        return this.taskRepository.findByStatusAndUserEmail(status, email).stream()
+                .map(this.taskMapper::toTaskResponse)
+                .toList();
     }
 
     @Scheduled(fixedRate = 86400000) // runs daily
-    public void checkReminders() {
-        final List<Task> upcomingTasks = this.taskRepository.findByDueDateBetween(
-                LocalDate.now(), LocalDate.now().plusDays(1));
+    public void checkReminders(String email) {
+        final List<TaskResponse> upcomingTasks = this.taskRepository.findByUserEmailAndDueDateBetween(
+                email, LocalDate.now(), LocalDate.now().plusDays(1))
+                .stream()
+                .map(this.taskMapper::toTaskResponse)
+                .toList();
+
         upcomingTasks.forEach(task -> {
             //TODO add logic for email notifications - JavaMailSender
-            LOG.warn("Reminder: " + task.getTitle() + " due tomorrow!");
+            LOG.warn("Reminder: " + task.title() + " due tomorrow!");
         });
     }
 }

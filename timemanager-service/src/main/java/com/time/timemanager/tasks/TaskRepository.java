@@ -5,16 +5,15 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
-    List<Task> findByUserId(Long userId);
+    List<Task> findByUserEmail(String email);
 
-    List<Task> findByUserIdAndStatus(Long userId, String status);
+    List<Task> findByStatusAndUserEmail(String status, String email);
 
-    List<Task> findByUserIdAndDueDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
+    List<Task> findByUserEmailAndDueDateBetween(String email, LocalDate begin, LocalDate end);
 
-//    List<Task> findByUserIdAndDueDateBeforeAndStatusNot(Long userId, LocalDate dueDate, String status);
-
-    List<Task> findByDueDateBetween(LocalDate begin, LocalDate end);
+    Optional<Task> findByIdAndUserEmail(Long id, String email);
 }
