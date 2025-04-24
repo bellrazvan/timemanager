@@ -14,5 +14,7 @@ public record TaskCreateRequest(
         String description,
         Priority priority,
         Category category,
-        LocalDate dueDate
+        LocalDate dueDate,
+        Boolean notificationBeforeDueDate,
+        Boolean notificationOverdue
 ) {}

@@ -8,11 +8,12 @@ import java.time.LocalDate;
 
 public record TaskResponse(
         Long id,
-        String email,
         String title,
         String description,
         Priority priority,
         Status status,
         Category category,
-        LocalDate dueDate
+        LocalDate dueDate,
+        Boolean notificationBeforeDueDate,
+        Boolean notificationOverdue
 ) {}

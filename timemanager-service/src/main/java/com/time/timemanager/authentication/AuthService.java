@@ -27,8 +27,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    @Value("${frontend.url}")
-    private String FRONTEND_URL;
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
     private final UserRepository userRepository;
@@ -104,9 +102,8 @@ public class AuthService {
         }
 
         final String token = this.jwtUtil.generatePasswordResetToken(request.email());
-        final String resetLink = FRONTEND_URL + "/reset-password?token=" + token;
 
-        this.emailService.sendPasswordResetEmail(request.email(), userOpt.get().getUsername(), resetLink);
+        this.emailService.sendPasswordResetEmail(request.email(), userOpt.get().getUsername(), token);
 
         return ResponseEntity.ok("If the email exists, a reset link will be sent");
     }

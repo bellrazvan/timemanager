@@ -2,13 +2,12 @@ package com.time.timemanager.tasks;
 
 import com.time.timemanager.authentication.User;
 import com.time.timemanager.authentication.UserRepository;
+import com.time.timemanager.mail.EmailService;
 import com.time.timemanager.tasks.dtos.TaskCreateRequest;
 import com.time.timemanager.tasks.dtos.TaskMapper;
 import com.time.timemanager.tasks.dtos.TaskResponse;
 import com.time.timemanager.tasks.dtos.TaskUpdateRequest;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,21 +22,13 @@ public class TaskService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
-    private static final Logger LOG = LogManager.getLogger(TaskService.class);
+    private final EmailService emailService;
 
     public TaskResponse createTask(TaskCreateRequest request, String email) {
         final User user = this.userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + " not found"));
         final Task task = this.taskMapper.toTask(request);
         task.setUser(user);
-
-        task.setStatus(Status.TODO); // default status
-        if (task.getPriority() == null) {
-            task.setPriority(Priority.LOW); // default priority
-        }
-        if (task.getCategory() == null) {
-            task.setCategory(Category.OTHER); //default category
-        }
 
         return this.taskMapper.toTaskResponse(this.taskRepository.save(task));
     }
@@ -81,29 +72,46 @@ public class TaskService {
         this.taskRepository.delete(task);
     }
 
-    public boolean isOverdue(Task task) {
-        return task.getDueDate() != null
-                && task.getDueDate().isBefore(LocalDate.now())
-                && !Status.DONE.equals(task.getStatus());
-    }
-
     public List<TaskResponse> getTasksByStatus(String status, String email) {
         return this.taskRepository.findByStatusAndUserEmail(status, email).stream()
                 .map(this.taskMapper::toTaskResponse)
                 .toList();
     }
 
-    @Scheduled(fixedRate = 86400000) // runs daily
-    public void checkReminders(String email) {
-        final List<TaskResponse> upcomingTasks = this.taskRepository.findByUserEmailAndDueDateBetween(
-                email, LocalDate.now(), LocalDate.now().plusDays(1))
-                .stream()
-                .map(this.taskMapper::toTaskResponse)
-                .toList();
+    @Scheduled(cron = "0 0 8 * * *")
+    public void checkReminders() {
+        final LocalDate reminderDate = LocalDate.now().plusDays(1);
+        final List<Task> tasks = this.taskRepository.findByDueDateAndNotificationBeforeDueDate(
+                reminderDate,
+                true
+        );
+        this.processTasks(tasks, false);
+    }
 
-        upcomingTasks.forEach(task -> {
-            //TODO add logic for email notifications - JavaMailSender
-            LOG.warn("Reminder: " + task.title() + " due tomorrow!");
+    @Scheduled(cron = "0 0 8 * * *")
+    public void checkOverdueTasks() {
+        final List<Task> tasks = this.taskRepository.findByDueDateBeforeAndNotificationOverdue(
+                LocalDate.now(),
+                true
+        );
+        this.processTasks(tasks, true);
+    }
+
+    private void processTasks(List<Task> tasks, boolean isOverdue) {
+        tasks.forEach(task -> {
+            final String email = task.getUser().getEmail();
+            final String name = task.getUser().getUsername();
+            final TaskResponse response = this.taskMapper.toTaskResponse(task);
+
+            if (isOverdue && this.isNotDone(task)) {
+                this.emailService.sendReminderOverdue(email, name, response);
+            } else if (!isOverdue && this.isNotDone(task)) {
+                this.emailService.sendReminderDueTomorrow(email, name, response);
+            }
         });
+    }
+
+    private boolean isNotDone(Task task) {
+        return !task.getStatus().equals(Status.DONE);
     }
 }

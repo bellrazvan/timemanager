@@ -2,16 +2,16 @@ package com.time.timemanager.tasks;
 
 import com.time.timemanager.authentication.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @Entity
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "tasks")
 public class Task {
     @Id
@@ -37,6 +37,12 @@ public class Task {
 
     @Column(name = "category")
     private Category category;
+
+    @Column(name = "notification_before_due_date")
+    private Boolean notificationBeforeDueDate;
+
+    @Column(name = "notification_overdue")
+    private Boolean notificationOverdue;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

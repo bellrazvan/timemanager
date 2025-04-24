@@ -16,6 +16,8 @@ public record TaskUpdateRequest(
         Priority priority,
         Status status,
         Category category,
-        LocalDate dueDate
+        LocalDate dueDate,
+        Boolean notificationBeforeDueDate,
+        Boolean notificationOverdue
 ) {}
 

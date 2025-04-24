@@ -13,7 +13,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByStatusAndUserEmail(String status, String email);
 
-    List<Task> findByUserEmailAndDueDateBetween(String email, LocalDate begin, LocalDate end);
-
     Optional<Task> findByIdAndUserEmail(Long id, String email);
+
+    List<Task> findByDueDateAndNotificationBeforeDueDate(LocalDate dueDate, boolean notificationBeforeDueDate);
+
+    List<Task> findByDueDateBeforeAndNotificationOverdue(LocalDate dueDate, boolean notificationOverdue);
 }
