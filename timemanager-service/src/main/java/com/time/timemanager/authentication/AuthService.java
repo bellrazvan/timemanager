@@ -134,7 +134,7 @@ public class AuthService {
                 .body("Successfully logged out");
     }
 
-    public ResponseEntity<?> requestPasswordReset(@Valid @RequestBody final PasswordResetInitRequest request) {
+    public ResponseEntity<?> requestPasswordReset(final PasswordResetInitRequest request) {
         final Optional<User> userOpt = this.userRepository.findByEmail(request.email());
         if (userOpt.isEmpty()) {
             return ResponseEntity.ok("If the email exists, a reset link will be sent");
@@ -149,7 +149,7 @@ public class AuthService {
         return ResponseEntity.ok("If the email exists, a reset link will be sent");
     }
 
-    public ResponseEntity<?> resetPassword(@Valid @RequestBody final PasswordResetSubmitRequest request) {
+    public ResponseEntity<?> resetPassword(final PasswordResetSubmitRequest request) {
         final String email;
         try {
             email = this.jwtUtil.getUsernameFromToken(request.token());

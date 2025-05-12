@@ -24,7 +24,7 @@ public class TaskService {
     private final TaskMapper taskMapper;
     private final EmailService emailService;
 
-    public TaskResponse createTask(TaskCreateRequest request, String email) {
+    public TaskResponse createTask(final TaskCreateRequest request, final String email) {
         final User user = this.userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + " not found"));
         final Task task = this.taskMapper.toTask(request);
@@ -33,18 +33,18 @@ public class TaskService {
         return this.taskMapper.toTaskResponse(this.taskRepository.save(task));
     }
 
-    public List<TaskResponse> getTasks(String email) {
+    public List<TaskResponse> getTasks(final String email) {
         return this.taskRepository.findByUserEmail(email).stream()
                 .map(this.taskMapper::toTaskResponse)
                 .toList();
     }
 
-    public Optional<TaskResponse> getTaskById(Long id, String email) {
+    public Optional<TaskResponse> getTaskById(final Long id, final String email) {
         return this.taskRepository.findByIdAndUserEmail(id, email)
                 .map(this.taskMapper::toTaskResponse);
     }
 
-    public TaskResponse updateTask(Long id, TaskUpdateRequest request, String email) {
+    public TaskResponse updateTask(final Long id, final TaskUpdateRequest request, final String email) {
         final User user = this.userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + " not found"));
         final Task task = this.taskRepository.findById(id)
@@ -59,7 +59,7 @@ public class TaskService {
         return this.taskMapper.toTaskResponse(this.taskRepository.save(task));
     }
 
-    public void deleteTask(Long id, String email) {
+    public void deleteTask(final Long id, final String email) {
         final User user = this.userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + " not found"));
         final Task task = this.taskRepository.findById(id)
@@ -72,7 +72,7 @@ public class TaskService {
         this.taskRepository.delete(task);
     }
 
-    public List<TaskResponse> getTasksByStatus(String status, String email) {
+    public List<TaskResponse> getTasksByStatus(final String status, final String email) {
         return this.taskRepository.findByStatusAndUserEmail(status, email).stream()
                 .map(this.taskMapper::toTaskResponse)
                 .toList();
@@ -97,7 +97,7 @@ public class TaskService {
         this.processTasks(tasks, true);
     }
 
-    private void processTasks(List<Task> tasks, boolean isOverdue) {
+    private void processTasks(final List<Task> tasks, final boolean isOverdue) {
         tasks.forEach(task -> {
             final String email = task.getUser().getEmail();
             final String name = task.getUser().getUsername();
@@ -111,7 +111,7 @@ public class TaskService {
         });
     }
 
-    private boolean isNotDone(Task task) {
+    private boolean isNotDone(final Task task) {
         return !task.getStatus().equals(Status.DONE);
     }
 }

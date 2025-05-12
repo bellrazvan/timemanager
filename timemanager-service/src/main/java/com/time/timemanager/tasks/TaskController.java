@@ -17,32 +17,32 @@ public class TaskController {
     private final TaskControllerHelper taskControllerHelper;
 
     @PostMapping
-    public ResponseEntity<TaskResponse> createTask(@RequestBody TaskCreateRequest request, Authentication auth) {
+    public ResponseEntity<TaskResponse> createTask(@RequestBody final TaskCreateRequest request, final Authentication auth) {
         return this.taskControllerHelper.createTask(request, auth);
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskResponse>> getTasks(Authentication auth) {
+    public ResponseEntity<List<TaskResponse>> getTasks(final Authentication auth) {
         return this.taskControllerHelper.getTasks(auth);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskResponse> getTaskById(@PathVariable Long id, Authentication auth) {
+    public ResponseEntity<TaskResponse> getTaskById(@PathVariable final Long id, final Authentication auth) {
         return this.taskControllerHelper.getTaskById(id, auth);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @RequestBody TaskUpdateRequest request, Authentication auth) {
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable final Long id, @RequestBody final TaskUpdateRequest request, final Authentication auth) {
         return this.taskControllerHelper.updateTask(id, request, auth);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTask(@PathVariable Long id, Authentication auth) {
+    public ResponseEntity<String> deleteTask(@PathVariable final Long id, final Authentication auth) {
         return this.taskControllerHelper.deleteTask(id, auth);
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<TaskResponse>> getTasksByStatus(@PathVariable String status, Authentication auth) {
+    public ResponseEntity<List<TaskResponse>> getTasksByStatus(@PathVariable final String status, final Authentication auth) {
         return this.taskControllerHelper.getTasksByStatus(status, auth);
     }
 }
