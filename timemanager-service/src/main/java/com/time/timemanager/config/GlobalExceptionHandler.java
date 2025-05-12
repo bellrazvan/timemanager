@@ -1,5 +1,8 @@
 package com.time.timemanager.config;
 
+import com.time.timemanager.config.exceptions.AccountInactiveException;
+import com.time.timemanager.config.exceptions.AccountUnconfirmedException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.validation.FieldError;
@@ -28,5 +31,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageConversionException.class)
     public ResponseEntity<?> handleEnumBindingError(HttpMessageConversionException ex) {
         return ResponseEntity.badRequest().body("Invalid value for enum field: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(AccountInactiveException.class)
+    public ResponseEntity<String> handleAccountInactiveException(AccountInactiveException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(AccountUnconfirmedException.class)
+    public ResponseEntity<String> handleAccountUnconfirmedException(AccountUnconfirmedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 }

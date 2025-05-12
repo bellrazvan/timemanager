@@ -21,4 +21,8 @@ public record CustomUserDetails(User user) implements UserDetails {
     public String getUsername() {
         return user.getEmail();
     }
+
+    public UserStatus getStatus() {
+        return user.getStatus();
+    }
 }

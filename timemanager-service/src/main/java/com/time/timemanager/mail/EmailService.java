@@ -31,10 +31,24 @@ public class EmailService {
     private static final String APP_NAME = "TimeManager";
     private static final String YOUR_TASK_IS = "Your Task is ";
     private static final String PASSWORD_RESET = "Password Reset";
+    private static final String CONFIRM_YOUR_ACCOUNT = "Confirm your account";
+    private static final String ACCOUNT_CONFIRMATION_PATH = "emails/confirmation";
     private static final String TASK_REMINDER_TEMPLATE_PATH = "emails/task-reminder";
     private static final String PASSWORD_RESET_TEMPLATE_PATH = "emails/reset-password";
     private static final String LOG_MESSAGE = "email successfully sent to user with email: ";
     private static final Logger LOG = LogManager.getLogger(EmailService.class);
+
+    public void sendConfirmationEmail(String to, String name, String token) {
+        final Context context = new Context();
+        context.setVariable("name", name);
+        context.setVariable("confirmationLink", this.FRONTEND_URL + "/confirm?token=" + token);
+
+        this.sendEmail(to,
+                CONFIRM_YOUR_ACCOUNT + " - " + APP_NAME,
+                ACCOUNT_CONFIRMATION_PATH,
+                context,
+                "Confirmation " + LOG_MESSAGE);
+    }
 
     public void sendPasswordResetEmail(String to, String name, String token) {
         final Context context = new Context();

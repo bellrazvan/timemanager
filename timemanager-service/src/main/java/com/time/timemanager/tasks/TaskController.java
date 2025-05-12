@@ -45,15 +45,4 @@ public class TaskController {
     public ResponseEntity<List<TaskResponse>> getTasksByStatus(@PathVariable String status, Authentication auth) {
         return this.taskControllerHelper.getTasksByStatus(status, auth);
     }
-
-// USED FOR TESTING REMINDERS
-//    @GetMapping("/trigger-reminders")
-//    public void testReminders() {
-//        taskService.checkReminders();
-//    }
-//
-//    @GetMapping("/trigger-overdue")
-//    public void testOverdue() {
-//        taskService.checkOverdueTasks();
-//    }
 }

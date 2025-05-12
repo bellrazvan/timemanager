@@ -1,5 +1,6 @@
 package com.time.timemanager.tasks;
 
+import com.time.timemanager.authentication.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +19,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByDueDateAndNotificationBeforeDueDate(LocalDate dueDate, boolean notificationBeforeDueDate);
 
     List<Task> findByDueDateBeforeAndNotificationOverdue(LocalDate dueDate, boolean notificationOverdue);
+
+    void deleteByUser(User user);
 }
