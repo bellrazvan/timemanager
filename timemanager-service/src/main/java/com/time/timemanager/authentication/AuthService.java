@@ -1,243 +1,115 @@
 package com.time.timemanager.authentication;
 
 import com.time.timemanager.authentication.dtos.*;
-import com.time.timemanager.config.exceptions.AccountInactiveException;
-import com.time.timemanager.config.exceptions.AccountUnconfirmedException;
-import com.time.timemanager.mail.EmailService;
-import com.time.timemanager.security.JwtUtil;
-import com.time.timemanager.tasks.TaskRepository;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+public interface AuthService {
+    /**
+     * Registers a new user with the provided registration details.
+     *
+     * @param request the registration request containing user details such as username, password, and email.
+     * @return a ResponseEntity containing the result of the registration process, which may include success or error messages.
+     */
+    ResponseEntity<?> register(final RegisterRequest request);
 
-@Service
-@RequiredArgsConstructor
-public class AuthService {
-    private final JwtUtil jwtUtil;
-    private final EmailService emailService;
-    private final UserRepository userRepository;
-    private final TaskRepository taskRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final CustomUserDetailsService customUserDetailsService;
-    private static final Logger LOG = LogManager.getLogger(AuthService.class);
+    /**
+     * Confirms the user's account using the provided token.
+     *
+     * This method validates the token and activates the user's account if the token is valid.
+     *
+     * @param token the token used to confirm the user's account, typically sent via email.
+     * @return a ResponseEntity containing the result of the account confirmation process,
+     *         which may include success or error messages.
+     */
+    ResponseEntity<?> confirmAccount(final String token);
 
-//    public ResponseEntity<?> register(final RegisterRequest request) {
-//        if (this.userRepository.existsByEmail(request.email())) {
-//            return ResponseEntity.badRequest().body("Email already in use");
-//        }
-//
-//        final User user = User.builder()
-//                .username(request.username())
-//                .email(request.email())
-//                .password(this.passwordEncoder.encode(request.password()))
-//                .status(UserStatus.ACTIVE)
-//                .build();
-//        this.userRepository.save(user);
-//
-//        return ResponseEntity.ok("User registered successfully");
-//    }
+    /**
+     * Authenticates a user based on the provided login request.
+     *
+     * This method processes the login request, validates the user's credentials,
+     * and returns a response indicating the success or failure of the login attempt.
+     *
+     * @param request the login request containing the user's credentials, such as username and password.
+     * @return a ResponseEntity containing the result of the login process,
+     *         which may include success or error messages.
+     */
+    ResponseEntity<?> login(final LoginRequest request);
 
-    public ResponseEntity<?> register(final RegisterRequest request) {
-        if (this.userRepository.existsByEmail(request.email())) {
-            return ResponseEntity.badRequest().body("Email already in use");
-        }
+    /**
+     * Refreshes the authentication token using the provided refresh token.
+     *
+     * This method validates the refresh token and issues a new access token if the refresh token is valid.
+     *
+     * @param refreshToken the refresh token used to obtain a new access token.
+     * @return a ResponseEntity containing the result of the token refresh process,
+     *         which may include the new access token or an error message if the refresh token is invalid.
+     */
+    ResponseEntity<?> refreshToken(final String refreshToken);
 
-        final String token = UUID.randomUUID().toString();
-        final User user = User.builder()
-                .username(request.username())
-                .email(request.email())
-                .password(this.passwordEncoder.encode(request.password()))
-                .status(UserStatus.UNCONFIRMED)
-                .confirmationToken(token)
-                .build();
-        this.userRepository.save(user);
+    /**
+     * Logs out the currently authenticated user.
+     *
+     * This method invalidates the user's session and any associated tokens,
+     * effectively logging the user out of the application.
+     *
+     * @return a ResponseEntity indicating the result of the logout process,
+     *         which may include a success message or an error message if the logout fails.
+     */
+    ResponseEntity<?> logout();
 
-        this.emailService.sendConfirmationEmail(request.email(), user.getUsername(), token);
+    /**
+     * Initiates the password reset process for a user.
+     *
+     * This method accepts a request containing the necessary information to
+     * initiate a password reset, such as the user's email address. It will
+     * send a password reset link or instructions to the user's email if the
+     * request is valid.
+     *
+     * @param request the password reset initialization request containing
+     *                the user's email address and any other required information.
+     * @return a ResponseEntity indicating the result of the password reset
+     *         request, which may include a success message or an error message
+     *         if the request fails.
+     */
+    ResponseEntity<?> requestPasswordReset(final PasswordResetInitRequest request);
 
-        return ResponseEntity.ok("User registered successfully. Please check your email to confirm your account.");
-    }
+    /**
+     * Resets the password for a user based on the provided request.
+     *
+     * This method processes the password reset request, validates the information,
+     * and updates the user's password if the request is valid.
+     *
+     * @param request the password reset request containing the necessary information
+     *                such as the user's email and the new password.
+     * @return a ResponseEntity indicating the result of the password reset process,
+     *         which may include a success message or an error message if the request fails.
+     */
+    ResponseEntity<?> resetPassword(final PasswordResetSubmitRequest request);
 
-    public ResponseEntity<?> confirmAccount(final String token) {
-        final Optional<User> userOpt = this.userRepository.findByConfirmationToken(token);
-        if (userOpt.isPresent()) {
-            final User user = userOpt.get();
-            user.setStatus(UserStatus.ACTIVE);
-            user.setConfirmationToken(null);
-            this.userRepository.save(user);
-            return ResponseEntity.ok("Account confirmed successfully.");
-        }
-        return ResponseEntity.badRequest().body("Invalid confirmation token.");
-    }
+    /**
+     * Deletes a user from the system based on the provided authentication information.
+     *
+     * This method verifies the user's identity using the provided authentication object
+     * and proceeds to delete the user's account if the user is authorized to perform this action.
+     *
+     * @param auth the authentication object containing the user's credentials and details.
+     * @return a ResponseEntity indicating the result of the delete operation,
+     *         which may include a success message or an error message if the deletion fails.
+     */
+    ResponseEntity<?> deleteUser(final Authentication auth);
 
-
-    public ResponseEntity<?> login(final LoginRequest request) {
-        final Authentication auth = this.authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password())
-        );
-
-        final CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
-
-        this.checkUserStatus(user.getStatus());
-
-        final String accessToken = this.jwtUtil.generateAccessToken(user);
-        final String refreshToken = this.jwtUtil.generateRefreshToken(user);
-
-        final ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/auth/refresh")
-                .maxAge(Duration.ofDays(7))
-                .build();
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(Map.of("accessToken", accessToken));
-    }
-
-    public ResponseEntity<?> refreshToken(final String refreshToken) {
-        if (refreshToken == null || this.jwtUtil.isInvalidToken(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
-        }
-
-        final String username = this.jwtUtil.getUsernameFromToken(refreshToken);
-        final CustomUserDetails user = this.customUserDetailsService.loadUserByUsername(username);
-
-        final String newAccessToken = this.jwtUtil.generateAccessToken(user);
-        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
-    }
-
-    public ResponseEntity<?> logout() {
-        final ResponseCookie deleteCookie = this.deleteRefreshTokenCookie();
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-                .body("Successfully logged out");
-    }
-
-    public ResponseEntity<?> requestPasswordReset(final PasswordResetInitRequest request) {
-        final Optional<User> userOpt = this.userRepository.findByEmail(request.email());
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.ok("If the email exists, a reset link will be sent");
-        }
-
-        this.checkUserStatus(userOpt.get().getStatus());
-
-        final String token = this.jwtUtil.generatePasswordResetToken(request.email());
-
-        this.emailService.sendPasswordResetEmail(request.email(), userOpt.get().getUsername(), token);
-
-        return ResponseEntity.ok("If the email exists, a reset link will be sent");
-    }
-
-    public ResponseEntity<?> resetPassword(final PasswordResetSubmitRequest request) {
-        final String email;
-        try {
-            email = this.jwtUtil.getUsernameFromToken(request.token());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid or expired token");
-        }
-
-        final Optional<User> userOpt = this.userRepository.findByEmail(email);
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("User not found");
-        }
-
-        final User user = userOpt.get();
-        user.setPassword(this.passwordEncoder.encode(request.newPassword()));
-        this.userRepository.save(user);
-
-        return ResponseEntity.ok("Password updated successfully");
-    }
-
-    public ResponseEntity<?> deleteUser(final Authentication auth) {
-        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication required");
-        }
-
-        final String email = auth.getName();
-        final Optional<User> userOpt = this.userRepository.findByEmail(email);
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("User not found");
-        }
-        userOpt.get().setStatus(UserStatus.INACTIVE);
-        userOpt.get().setInactiveSince(LocalDate.now());
-        this.userRepository.save(userOpt.get());
-
-        SecurityContextHolder.clearContext();
-        ResponseCookie cookie = this.deleteRefreshTokenCookie();
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body("Account deactivated successfully, you have 30 days until your account is deleted");
-    }
-
-    public ResponseEntity<?> reactivateUser(final ReactivateUserRequest request) {
-        final Optional<User> userOpt = this.userRepository.findByEmail(request.email());
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("User not found");
-        }
-
-        userOpt.get().setStatus(UserStatus.ACTIVE);
-        userOpt.get().setInactiveSince(null);
-        this.userRepository.save(userOpt.get());
-
-        return ResponseEntity.ok("Account activated successfully");
-    }
-
-    @Scheduled(cron = "0 0 8 * * *")
-    public void deleteInactiveUsers() {
-        final List<User> inactiveUsers = this.getInactiveUsersForOverThirtyDays();
-
-        inactiveUsers.forEach(user -> {
-            this.taskRepository.deleteByUser(user);
-            this.userRepository.delete(user);
-            LOG.info("Deleted inactive user: {}", user.getEmail());
-        });
-
-        LOG.info("Completed inactive user cleanup. Removed {} accounts.", inactiveUsers.size());
-    }
-
-    private List<User> getInactiveUsersForOverThirtyDays() {
-        final LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
-        return this.userRepository.findByStatusAndInactiveSinceBefore(UserStatus.INACTIVE, thirtyDaysAgo);
-    }
-
-    private void checkUserStatus(final UserStatus status) throws AccountInactiveException, AccountUnconfirmedException {
-        switch (status) {
-            case INACTIVE:
-                throw new AccountInactiveException("Account is inactive");
-            case UNCONFIRMED:
-                throw new AccountUnconfirmedException("Account is not confirmed yet");
-            default:
-                break;
-        }
-    }
-
-    private ResponseCookie deleteRefreshTokenCookie() {
-        return ResponseCookie.from("refreshToken", "")
-                .httpOnly(true)
-                .secure(true)
-                .path("/auth/refresh")
-                .maxAge(0)
-                .build();
-    }
+    /**
+     * Reactivates a user account based on the provided reactivation request.
+     *
+     * This method processes the reactivation request, verifies the user's identity,
+     * and reactivates the user's account if the request is valid and the user is eligible for reactivation.
+     *
+     * @param request the reactivation request containing the necessary information
+     *                such as the user's ID and any required verification details.
+     * @return a ResponseEntity indicating the result of the reactivation process,
+     *         which may include a success message or an error message if the reactivation fails.
+     */
+    ResponseEntity<?> reactivateUser(final ReactivateUserRequest request);
 }
+
