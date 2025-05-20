@@ -1,7 +1,7 @@
 package com.time.timemanager.config;
 
-import com.time.timemanager.config.exceptions.AccountInactiveException;
-import com.time.timemanager.config.exceptions.AccountUnconfirmedException;
+import com.time.timemanager.authentication.exceptions.AccountInactiveException;
+import com.time.timemanager.authentication.exceptions.AccountUnconfirmedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;

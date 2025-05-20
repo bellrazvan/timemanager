@@ -1,4 +1,4 @@
-package com.time.timemanager.tasks.crud.update;
+package com.time.timemanager.tasks.services.update;
 
 import com.time.timemanager.authentication.User;
 import com.time.timemanager.authentication.UserRepository;
@@ -8,12 +8,16 @@ import com.time.timemanager.tasks.dtos.TaskMapper;
 import com.time.timemanager.tasks.dtos.TaskResponse;
 import com.time.timemanager.tasks.dtos.TaskUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
 public class TaskUpdateServiceImpl implements TaskUpdateService {
+    private static final Logger LOG = LoggerFactory.getLogger(TaskUpdateServiceImpl.class);
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final TaskMapper taskMapper;

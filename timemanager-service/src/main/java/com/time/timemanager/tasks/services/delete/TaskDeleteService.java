@@ -1,7 +1,4 @@
-package com.time.timemanager.tasks.crud.delete;
-
-import com.time.timemanager.tasks.dtos.TaskResponse;
-import com.time.timemanager.tasks.dtos.TaskUpdateRequest;
+package com.time.timemanager.tasks.services.delete;
 
 public interface TaskDeleteService {
     /**

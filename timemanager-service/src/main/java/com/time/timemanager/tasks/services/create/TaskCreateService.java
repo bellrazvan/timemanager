@@ -1,10 +1,7 @@
-package com.time.timemanager.tasks.crud.create;
+package com.time.timemanager.tasks.services.create;
 
 import com.time.timemanager.tasks.dtos.TaskCreateRequest;
 import com.time.timemanager.tasks.dtos.TaskResponse;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface TaskCreateService {
     /**

@@ -1,4 +1,4 @@
-package com.time.timemanager.tasks.crud.read;
+package com.time.timemanager.tasks.services.read;
 
 import com.time.timemanager.tasks.dtos.TaskResponse;
 

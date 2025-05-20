@@ -1,12 +1,12 @@
 package com.time.timemanager.tasks;
 
-import com.time.timemanager.tasks.crud.create.TaskCreateService;
-import com.time.timemanager.tasks.crud.delete.TaskDeleteService;
+import com.time.timemanager.tasks.services.create.TaskCreateService;
+import com.time.timemanager.tasks.services.delete.TaskDeleteService;
 import com.time.timemanager.tasks.dtos.TaskCreateRequest;
 import com.time.timemanager.tasks.dtos.TaskResponse;
 import com.time.timemanager.tasks.dtos.TaskUpdateRequest;
-import com.time.timemanager.tasks.crud.read.TaskReadService;
-import com.time.timemanager.tasks.crud.update.TaskUpdateService;
+import com.time.timemanager.tasks.services.read.TaskReadService;
+import com.time.timemanager.tasks.services.update.TaskUpdateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

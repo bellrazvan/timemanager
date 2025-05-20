@@ -1,4 +1,4 @@
-package com.time.timemanager.tasks.crud.delete;
+package com.time.timemanager.tasks.services.delete;
 
 import com.time.timemanager.authentication.User;
 import com.time.timemanager.authentication.UserRepository;

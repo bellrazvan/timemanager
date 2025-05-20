@@ -1,4 +1,4 @@
-package com.time.timemanager.config.exceptions;
+package com.time.timemanager.authentication.exceptions;
 
 public class AccountUnconfirmedException extends RuntimeException {
     public AccountUnconfirmedException(String message) {
