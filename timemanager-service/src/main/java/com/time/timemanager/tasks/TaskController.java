@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTask(@PathVariable final Long id, final Authentication auth) {
+    public ResponseEntity<Map<String, String>> deleteTask(@PathVariable final Long id, final Authentication auth) {
         return this.taskControllerHelper.deleteTask(id, auth);
     }
 

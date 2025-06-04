@@ -4,6 +4,7 @@ import com.time.timemanager.authentication.*;
 import com.time.timemanager.authentication.dtos.LoginRequest;
 import com.time.timemanager.authentication.exceptions.AccountInactiveException;
 import com.time.timemanager.authentication.exceptions.AccountUnconfirmedException;
+import com.time.timemanager.config.ApiResponseMapper;
 import com.time.timemanager.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -47,20 +48,20 @@ public class UserLoginServiceImpl implements UserLoginService {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(Map.of("accessToken", accessToken));
+                .body(ApiResponseMapper.accessTokenResponse(accessToken));
     }
 
     @Override
     public ResponseEntity<?> refreshToken(final String refreshToken) {
         if (refreshToken == null || this.jwtUtil.isInvalidToken(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseMapper.errorResponse("Invalid refresh token"));
         }
 
         final String username = this.jwtUtil.getUsernameFromToken(refreshToken);
         final CustomUserDetails user = this.customUserDetailsService.loadUserByUsername(username);
 
         final String newAccessToken = this.jwtUtil.generateAccessToken(user);
-        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+        return ResponseEntity.ok(ApiResponseMapper.accessTokenResponse(newAccessToken));
     }
 
     @Override
@@ -68,7 +69,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         final ResponseCookie deleteCookie = this.deleteRefreshTokenCookie();
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-                .body("Successfully logged out");
+                .body(ApiResponseMapper.successfulResponse("Successfully logged out"));
     }
 
     private void checkUserStatus(final UserStatus status) throws AccountInactiveException, AccountUnconfirmedException {

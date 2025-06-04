@@ -1,5 +1,6 @@
 package com.time.timemanager.tasks;
 
+import com.time.timemanager.config.ApiResponseMapper;
 import com.time.timemanager.tasks.dtos.TaskCreateRequest;
 import com.time.timemanager.tasks.dtos.TaskResponse;
 import com.time.timemanager.tasks.dtos.TaskUpdateRequest;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -45,11 +47,11 @@ public class TaskControllerHelper {
         return ResponseEntity.ok(updatedTask);
     }
 
-    public ResponseEntity<String> deleteTask(Long id, Authentication auth) {
+    public ResponseEntity<Map<String, String>> deleteTask(Long id, Authentication auth) {
         final String email = auth.getName();
         this.taskService.deleteTask(id, email);
 
-        return ResponseEntity.ok("Deleted task successfully");
+        return ResponseEntity.ok().body(ApiResponseMapper.successfulResponse("Deleted task successfully"));
     }
 
     public ResponseEntity<List<TaskResponse>> getTasksByStatus(String status, Authentication auth) {

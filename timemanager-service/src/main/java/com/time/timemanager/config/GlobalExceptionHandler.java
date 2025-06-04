@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageConversionException.class)
     public ResponseEntity<?> handleEnumBindingError(HttpMessageConversionException ex) {
-        return ResponseEntity.badRequest().body("Invalid value for enum field: " + ex.getMessage());
+        return ResponseEntity.badRequest().body(ApiResponseMapper.errorResponse("Invalid value for enum field: " + ex.getMessage()));
     }
 
     @ExceptionHandler(AccountInactiveException.class)

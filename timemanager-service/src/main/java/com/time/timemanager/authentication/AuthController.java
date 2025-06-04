@@ -48,7 +48,6 @@ public class AuthController {
         return this.authService.resetPassword(request);
     }
 
-    //TODO get auth info from token, remove any parameter passed in the request
     @DeleteMapping("/delete-account")
     public ResponseEntity<?> deleteAccount(final Authentication auth) {
         return this.authService.deleteUser(auth);

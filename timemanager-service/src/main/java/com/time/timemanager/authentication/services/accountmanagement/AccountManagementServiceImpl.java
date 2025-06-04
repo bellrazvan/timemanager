@@ -2,6 +2,7 @@ package com.time.timemanager.authentication.services.accountmanagement;
 
 import com.time.timemanager.authentication.*;
 import com.time.timemanager.authentication.dtos.ReactivateUserRequest;
+import com.time.timemanager.config.ApiResponseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -22,13 +24,13 @@ public class AccountManagementServiceImpl implements AccountManagementService {
     @Override
     public ResponseEntity<?> deleteUser(final Authentication auth) {
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication required");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseMapper.errorResponse("Authentication required"));
         }
 
         final String email = auth.getName();
         final Optional<User> userOpt = this.userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("User not found");
+            return ResponseEntity.badRequest().body(ApiResponseMapper.errorResponse("User not found"));
         }
         userOpt.get().setStatus(UserStatus.INACTIVE);
         userOpt.get().setInactiveSince(LocalDate.now());
@@ -38,21 +40,21 @@ public class AccountManagementServiceImpl implements AccountManagementService {
         ResponseCookie cookie = this.deleteRefreshTokenCookie();
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body("Account deactivated successfully, you have 30 days until your account is deleted");
+                .body(ApiResponseMapper.successfulResponse("Account deactivated successfully, you have 30 days until your account is deleted"));
     }
 
     @Override
     public ResponseEntity<?> reactivateUser(final ReactivateUserRequest request) {
         final Optional<User> userOpt = this.userRepository.findByEmail(request.email());
         if (userOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("User not found");
+            return ResponseEntity.badRequest().body(ApiResponseMapper.errorResponse("User not found"));
         }
 
         userOpt.get().setStatus(UserStatus.ACTIVE);
         userOpt.get().setInactiveSince(null);
         this.userRepository.save(userOpt.get());
 
-        return ResponseEntity.ok("Account activated successfully");
+        return ResponseEntity.ok(ApiResponseMapper.successfulResponse("Account activated successfully"));
     }
 
     private ResponseCookie deleteRefreshTokenCookie() {

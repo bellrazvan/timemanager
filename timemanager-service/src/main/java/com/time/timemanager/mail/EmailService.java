@@ -41,7 +41,7 @@ public class EmailService {
     public void sendConfirmationEmail(String to, String name, String token) {
         final Context context = new Context();
         context.setVariable("name", name);
-        context.setVariable("confirmationLink", this.FRONTEND_URL + "/confirm?token=" + token);
+        context.setVariable("confirmationLink", this.FRONTEND_URL + "/confirm-account?token=" + token);
 
         this.sendEmail(to,
                 CONFIRM_YOUR_ACCOUNT + " - " + APP_NAME,
