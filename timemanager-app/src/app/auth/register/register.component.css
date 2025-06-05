@@ -1,0 +1,78 @@
+.register-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 2rem 2.5rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(34, 69, 227, 0.08);
+}
+
+.register-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+form label {
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+form input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.2s;
+}
+
+form input.invalid {
+  border-color: #e34c26;
+}
+
+.error {
+  color: #e34c26;
+  font-size: 0.95em;
+  margin-bottom: 0.5rem;
+}
+
+.success {
+  color: #2e7d32;
+  font-size: 1em;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 0.75rem;
+  background: #2245e3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button[type="submit"]:disabled {
+  background: #b3b3b3;
+  cursor: not-allowed;
+}
+
+.register-links {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.98em;
+}
+
+.register-links a {
+  color: #2245e3;
+  text-decoration: none;
+  margin-left: 0.5em;
+}

@@ -1,0 +1,8 @@
+<div class="confirm-account-container">
+  <h2>Account Confirmation</h2>
+  <div *ngIf="message" class="success">{{ message }}</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div class="login-link" style="margin-top: 1em; text-align: center;">
+    <a routerLink="/login">Go to Login</a>
+  </div>
+</div>

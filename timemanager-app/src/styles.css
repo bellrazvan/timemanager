@@ -1,1 +1,133 @@
-/* You can add global styles to this file, and also import other style files */
+/* styles.css */
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background: #f7f7f7;
+  color: #222;
+}
+
+.container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(34,34,34,0.08);
+}
+
+button[type="submit"] {
+  width: 100%;
+  background: #2245e3;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.auth-container, .login-container, .register-container {
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 2.5rem 2rem 2rem 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(34, 69, 227, 0.08), 0 1.5px 6px rgba(0,0,0,0.04);
+}
+
+.auth-container h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #2245e3;
+  font-weight: 700;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #333;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+  display: block;
+  margin: 0 auto;
+}
+
+input:focus {
+  border-color: #2245e3;
+  outline: none;
+}
+
+button[type="submit"] {
+  width: 100%;
+  background: #2245e3;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+
+button[type="submit"]:hover {
+  background: #1832a2;
+}
+
+button[type="submit"]:disabled {
+  background: #b3b3b3;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #e53935;
+  background: #fff0f0;
+  border: 1px solid #e53935;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.success {
+  color: #388e3c;
+  background: #f0fff0;
+  border: 1px solid #388e3c;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 15px;
+}
+
+.auth-link a {
+  color: #2245e3;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}
