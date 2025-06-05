@@ -40,24 +40,6 @@ input:focus {
   outline: none;
 }
 
-button[type="submit"] {
-  width: 100%;
-  background: #2245e3;
-  color: #fff;
-  border: none;
-  padding: 12px;
-  border-radius: 6px;
-  font-size: 17px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 8px;
-}
-
-button[type="submit"]:hover {
-  background: #1832a2;
-}
-
 .error {
   color: #e53935;
   background: #fff0f0;

@@ -1,4 +1,4 @@
-<header>
+<header *ngIf="!isAuthPage">
   <h1>TimeManager App</h1>
   <nav *ngIf="isAuthenticated" class="navbar">
     <a routerLink="/reset-password" routerLinkActive="active">Reset Password</a>
@@ -11,6 +11,3 @@
 <main>
   <router-outlet></router-outlet>
 </main>
-<footer>
-  {{ currentYear }}
-</footer>

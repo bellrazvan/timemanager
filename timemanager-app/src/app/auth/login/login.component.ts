@@ -12,9 +12,7 @@ import {CommonModule} from '@angular/common';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  loading = false;
   errorMessage: string | null = null;
-  successMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -28,17 +26,17 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    if (this.loginForm.invalid) return;
-    this.loading = true;
+    if (this.loginForm.invalid) {
+      return;
+    }
+
     this.authService.login(this.loginForm.value).subscribe({
-      next: (res: any) => {
+      next: (res:any) => {
         localStorage.setItem('accessToken', res.accessToken);
-        this.loading = false;
         this.router.navigate(['/dashboard']);
       },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Invalid email or password';
-        this.loading = false;
+      error: (err: any) => {
+        this.errorMessage = err.error?.message || 'Invalid email or password.';
       }
     });
   }

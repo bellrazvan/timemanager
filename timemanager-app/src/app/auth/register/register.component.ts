@@ -11,32 +11,31 @@ import {Router, RouterLink} from '@angular/router';
 })
 export class RegisterComponent {
   registerForm: FormGroup;
-
   error: string = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
+  constructor(private fb: FormBuilder,
+              private authService: AuthService,
+              private router: Router
   ) {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       username: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  onSubmit() {
-    if (this.registerForm.invalid) return;
+  onSubmit(): void {
+    if (this.registerForm.invalid) {
+      return;
+    }
 
     this.authService.register(this.registerForm.value).subscribe({
-        next: () => {
-          this.router.navigate(['/registration-confirmation']);
-          this.error = '';
-        },
-        error: (err) => {
-          this.error = err.error?.message || 'Registration failed';
-        }
-      });
+      next: (): void => {
+        this.router.navigate(['/registration-confirmation']);
+      },
+      error: (err: any): void => {
+        this.error = err.error?.message || 'Registration failed.';
+      },
+    });
   }
 }
