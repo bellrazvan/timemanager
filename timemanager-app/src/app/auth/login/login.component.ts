@@ -12,7 +12,7 @@ import {CommonModule} from '@angular/common';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  errorMessage: string | null = null;
+  error: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -36,7 +36,7 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: (err: any) => {
-        this.errorMessage = err.error?.message || 'Invalid email or password.';
+        this.error = err.error?.message || 'Invalid email or password.';
       }
     });
   }

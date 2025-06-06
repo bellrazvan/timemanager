@@ -26,7 +26,7 @@
       <button type="submit" [disabled]="loginForm.invalid">
         Login
       </button>
-      <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+      <div *ngIf="error" class="error">{{ error }}</div>
     </form>
     <div class="auth-link">
       New here?
