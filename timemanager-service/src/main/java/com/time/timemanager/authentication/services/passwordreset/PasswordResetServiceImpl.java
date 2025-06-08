@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -56,6 +55,10 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         }
 
         final User user = userOpt.get();
+        if (user.getPassword().equals(request.newPassword())) {
+            return ResponseEntity.badRequest().body(ApiResponseMapper.errorResponse("New password cannot be the same as the old one"));
+        }
+
         user.setPassword(this.passwordEncoder.encode(request.newPassword()));
         this.userRepository.save(user);
 
