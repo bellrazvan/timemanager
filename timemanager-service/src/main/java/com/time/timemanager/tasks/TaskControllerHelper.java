@@ -35,7 +35,7 @@ public class TaskControllerHelper {
     public ResponseEntity<TaskResponse> getTaskById(Long id, Authentication auth) {
         final String email = auth.getName();
         final TaskResponse task = this.taskService.getTaskById(id, email)
-                .orElseThrow(() -> new IllegalArgumentException("Task " + id + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Task " + id + " not found."));
 
         return ResponseEntity.ok(task);
     }

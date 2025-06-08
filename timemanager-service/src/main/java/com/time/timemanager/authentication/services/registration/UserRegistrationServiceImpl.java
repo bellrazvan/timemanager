@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -24,7 +23,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     @Override
     public ResponseEntity<?> register(final RegisterRequest request) {
         if (this.userRepository.existsByEmail(request.email())) {
-            return ResponseEntity.badRequest().body(ApiResponseMapper.errorResponse("Email already in use"));
+            return ResponseEntity.badRequest().body(ApiResponseMapper.errorResponse("Email already in use."));
         }
 
         final String token = UUID.randomUUID().toString();

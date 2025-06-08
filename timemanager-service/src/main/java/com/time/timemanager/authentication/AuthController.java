@@ -57,4 +57,9 @@ public class AuthController {
     public ResponseEntity<?> reactivateUser(@Valid @RequestBody final ReactivateUserRequest request) {
         return this.authService.reactivateUser(request);
     }
+
+    @GetMapping("/user-details")
+    public ResponseEntity<?> getUserDetails(final Authentication auth) {
+        return this.authService.getUserDetails(auth);
+    }
 }

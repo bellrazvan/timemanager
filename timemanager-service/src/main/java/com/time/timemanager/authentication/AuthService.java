@@ -22,5 +22,7 @@ public interface AuthService {
     ResponseEntity<?> deleteUser(final Authentication auth);
 
     ResponseEntity<?> reactivateUser(final ReactivateUserRequest request);
+
+    ResponseEntity<?> getUserDetails(final Authentication auth);
 }
 

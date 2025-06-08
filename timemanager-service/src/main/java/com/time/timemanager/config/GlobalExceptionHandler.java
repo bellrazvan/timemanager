@@ -30,16 +30,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageConversionException.class)
     public ResponseEntity<?> handleEnumBindingError(HttpMessageConversionException ex) {
-        return ResponseEntity.badRequest().body(ApiResponseMapper.errorResponse("Invalid value for enum field: " + ex.getMessage()));
+        return ResponseEntity.badRequest().body(ApiResponseMapper.errorResponse("Invalid value for enum field: " + ex.getMessage() + "."));
     }
 
     @ExceptionHandler(AccountInactiveException.class)
-    public ResponseEntity<String> handleAccountInactiveException(AccountInactiveException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    public ResponseEntity<?> handleAccountInactiveException(AccountInactiveException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponseMapper.errorResponse(ex.getMessage() + "."));
     }
 
     @ExceptionHandler(AccountUnconfirmedException.class)
-    public ResponseEntity<String> handleAccountUnconfirmedException(AccountUnconfirmedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    public ResponseEntity<?> handleAccountUnconfirmedException(AccountUnconfirmedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponseMapper.errorResponse(ex.getMessage() + "."));
     }
 }

@@ -29,4 +29,12 @@ public interface AccountManagementService {
      *         which may include a success message or an error message if the reactivation fails.
      */
     ResponseEntity<?> reactivateUser(final ReactivateUserRequest request);
+
+    /**
+     * Retrieves the details of the currently authenticated user.
+     *
+     * @param auth the authentication object containing the user's authentication information
+     * @return a ResponseEntity containing the user details or an appropriate error response
+     */
+    ResponseEntity<?> getUserDetails(final Authentication auth);
 }

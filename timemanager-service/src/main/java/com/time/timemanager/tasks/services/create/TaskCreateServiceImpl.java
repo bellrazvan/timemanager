@@ -21,7 +21,7 @@ public class TaskCreateServiceImpl implements TaskCreateService {
     @Override
     public TaskResponse createTask(final TaskCreateRequest request, final String email) {
         final User user = this.userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + " not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User with email: " + email + " not found."));
         final Task task = this.taskMapper.toTask(request);
         task.setUser(user);
 

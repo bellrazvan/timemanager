@@ -36,7 +36,7 @@ public class JwtUtil {
     public String generatePasswordResetToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
-                .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15 min
+                .setExpiration(new Date(System.currentTimeMillis() + 5 * 60 * 1000)) // 5 min
                 .signWith(SignatureAlgorithm.HS256, this.secret)
                 .compact();
     }
@@ -49,15 +49,15 @@ public class JwtUtil {
                     .parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException ex) {
-            LOG.error("Token expired: " + ex.getMessage());
+            LOG.error("Token expired: {}", ex.getMessage());
         } catch (UnsupportedJwtException ex) {
-            LOG.error("Unsupported JWT: " + ex.getMessage());
+            LOG.error("Unsupported JWT: {}", ex.getMessage());
         } catch (MalformedJwtException ex) {
-            LOG.error("Malformed JWT: " + ex.getMessage());
+            LOG.error("Malformed JWT: {}", ex.getMessage());
         } catch (SignatureException ex) {
-            LOG.error("Invalid signature: " + ex.getMessage());
+            LOG.error("Invalid signature: {}", ex.getMessage());
         } catch (IllegalArgumentException ex) {
-            LOG.error("Empty or null token: " + ex.getMessage());
+            LOG.error("Empty or null token: {}", ex.getMessage());
         }
         return false;
     }

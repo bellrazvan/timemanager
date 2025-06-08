@@ -62,4 +62,9 @@ public class AuthServiceImpl implements AuthService {
     public ResponseEntity<?> reactivateUser(final ReactivateUserRequest request) {
         return this.accountManagementService.reactivateUser(request);
     }
+
+    @Override
+    public ResponseEntity<?> getUserDetails(final Authentication auth) {
+        return this.accountManagementService.getUserDetails(auth);
+    }
 }
