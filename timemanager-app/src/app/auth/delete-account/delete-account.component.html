@@ -1,13 +1,19 @@
-<div class="delete-account-container">
-  <h2>Delete Account</h2>
-  <p>
-    Are you sure you want to delete your account? This will deactivate your account immediately.
-    You have 30 days to reactivate before permanent deletion.
-  </p>
-  <button (click)="onDeleteAccount()" [disabled]="loading">
-    {{ loading ? 'Deleting...' : 'Delete Account' }}
-  </button>
-  <div *ngIf="message" class="success">{{ message }}</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
+<div class="delete-account-card">
+  <div class="modal-backdrop">
+    <div class="modal">
+      <h3>Are you sure?</h3>
+      <p>
+        Are you sure you want to delete your account? This will deactivate your account immediately.<br>
+        <strong>Your account will be permanently deleted after 30 days.</strong>
+      </p>
+      <div class="buttons">
+        <button type="submit" (click)="confirmDelete()" [disabled]="loading">
+          {{ loading ? 'Deleting...' : 'Yes, Delete' }}
+        </button>
+        <button type="button" class="cancel-btn" (click)="cancelDelete()" [disabled]="loading">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
-

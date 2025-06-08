@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AuthService} from '../auth.service';
 import {CommonModule} from '@angular/common';
 
@@ -11,10 +11,9 @@ import {CommonModule} from '@angular/common';
 })
 export class PasswordResetComponent implements OnInit {
   resetForm: FormGroup;
-  message = '';
-  error = '';
-  token = '';
-  email = '';
+  message: string = '';
+  error: string = '';
+  token: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -30,24 +29,26 @@ export class PasswordResetComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.token = params['token'] || '';
-      this.email = params['email'] || '';
     });
   }
 
   onSubmit() {
     if (this.resetForm.invalid) return;
-    this.authService.resetPassword(this.resetForm.value)
+    const data = {
+      token: this.token,
+      newPassword: this.resetForm.value.newPassword
+    }
+    this.authService.resetPassword(data)
       .subscribe({
         next: (res: any) => {
-          this.message = res.message || 'Password updated successfully.';
+          this.message = res.success + '<br>Redirecting to Login...';
           this.error = '';
           setTimeout(() => this.router.navigate(['/login']), 2000);
         },
         error: (err) => {
-          this.error = err.error?.message || 'Password reset failed.';
+          this.error = err.error?.error || 'Password reset failed.';
           this.message = '';
         }
       });
   }
 }
-

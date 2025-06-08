@@ -142,8 +142,8 @@ button[type="submit"]:disabled {
 
 .logo-container {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 4px;
+  left: 16px;
 }
 
 body, html {
@@ -152,11 +152,97 @@ body, html {
 }
 
 .logo-img {
-  /*height: 100px;*/
   width: auto;
   max-width: 180px;
   display: block;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.page-background {
+  position: fixed;
+  min-height: 100vh;
+  min-width: 100vw;
+  background: linear-gradient(135deg, #3f51b5 30%, #7a94ff 90%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-container {
+  max-width: 1500px;
+  min-height: calc(100vh - 160px);
+  width: 100%;
+  margin: 48px auto 48px auto;
+  padding: 32px 28px 24px 28px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(34, 69, 227, 0.08), 0 1.5px 6px rgba(0,0,0,0.04);
+  box-sizing: border-box;
+}
+
+.page-container h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #2245e3;
+  font-weight: 700;
+}
+
+html, body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.cancel-btn {
+  background: #fff;
+  color: #2245e3;
+  border: 1px solid #2245e3;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background: #f0f4ff;
+}
+
+.blue-btn {
+  background: #2245e3;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 20px;
+  transition: background 0.2s;
+}
+.blue-btn:hover {
+  background: #1832a2;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.35);
+  z-index: 1000;
+}
+
+.modal-card {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(34, 69, 227, 0.18);
+  padding: 32px 28px;
+  z-index: 1001;
+  min-width: 340px;
+  max-width: 90vw;
+}

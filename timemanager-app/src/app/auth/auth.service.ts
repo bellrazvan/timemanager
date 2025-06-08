@@ -30,8 +30,8 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/logout`, null, { withCredentials: true });
   }
 
-  requestPasswordReset(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reset-request`, { email });
+  requestPasswordReset(data: { email: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-request`, data);
   }
 
   resetPassword(data: { token: string, newPassword: string }): Observable<any> {
@@ -39,11 +39,19 @@ export class AuthService {
   }
 
   deleteAccount(): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/delete-account`);
+    return this.http.delete(`${this.apiUrl}/delete-account`, { withCredentials: true });
   }
 
-  reactivateUser(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/activate-user`, { email });
+  reactivateUser(data: { email: string, password: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/activate-user`, data);
+  }
+
+  getUserDetails(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user-details`, { withCredentials: true });
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('accessToken');
   }
 }
 

@@ -47,7 +47,7 @@ export class ConfirmAccountComponent implements OnInit, OnDestroy {
         this.message = 'Your account has been confirmed successfully!';
       },
       error: (err) => {
-        this.error = err.error?.message || 'Failed to confirm your account. The token may be invalid or expired.';
+        this.error = err.error?.error || 'Failed to confirm your account. The token may be invalid or expired.';
       }
     });
   }

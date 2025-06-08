@@ -1,1 +1,33 @@
-<p>task-list works!</p>
+<div class="page-background">
+  <div class="modal-overlay" *ngIf="showCreateTaskModal" (click)="closeCreateTask()"></div>
+  <div class="modal-card" *ngIf="showCreateTaskModal">
+    <app-task-create
+      (close)="closeCreateTask()"
+      (taskCreated)="onTaskCreated($event)">
+    </app-task-create>
+
+  </div>
+  <div class="page-container">
+    <h2>My Tasks</h2>
+    <div class="tasklist-actions">
+      <div class="tasklist-actions center-btn">
+        <button class="blue-btn" (click)="openCreateTask()">Create Task</button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading">Loading tasks...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <ul class="task-list" *ngIf="!loading && tasks.length">
+      <li class="task-item" *ngFor="let task of tasks">
+        <span [class.completed]="task.status === 'completed'">{{ task.title }}</span>
+        <div>
+          <button class="task-action-btn" (click)="markDone(task)" [disabled]="task.status === 'DONE'">Done</button>
+          <button class="task-action-btn delete" (click)="deleteTask(task)">Delete</button>
+        </div>
+      </li>
+    </ul>
+    <div *ngIf="!loading && !tasks.length" class="no-tasks">No tasks found.</div>
+  </div>
+</div>
+

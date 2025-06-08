@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../auth.service';
 import {CommonModule} from '@angular/common';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-password-reset-request',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './password-reset-request.component.html'
 })
 export class PasswordResetRequestComponent {
@@ -27,11 +28,11 @@ export class PasswordResetRequestComponent {
     this.authService.requestPasswordReset(this.resetForm.value)
       .subscribe({
         next: (res: any) => {
-          this.message = res.message || 'If the email exists, a reset link will be sent.';
+          this.message = res.success || 'If the email exists, a reset link will be sent.';
           this.error = '';
         },
         error: (err) => {
-          this.error = err.error?.message || 'Something went wrong.';
+          this.error = err.error?.error || 'Something went wrong.';
           this.message = '';
         }
       });

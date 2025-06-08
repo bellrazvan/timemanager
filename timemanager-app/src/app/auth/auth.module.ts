@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {provideHttpClient} from '@angular/common/http';
+import { provideHttpClient, withInterceptors} from '@angular/common/http';
 
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
@@ -12,6 +12,7 @@ import {ConfirmAccountComponent} from './confirm-account/confirm-account.compone
 import {DeleteAccountComponent} from './delete-account/delete-account.component';
 import {RefreshTokenComponent} from './refresh-token/refresh-token.component';
 import {ReactivateUserComponent} from './reactivate-user/reactivate-user.component';
+import {authInterceptor} from './auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,9 @@ import {ReactivateUserComponent} from './reactivate-user/reactivate-user.compone
     ReactivateUserComponent
   ],
   providers: [
-    provideHttpClient()
+    provideHttpClient(
+      withInterceptors([authInterceptor])
+    )
   ],
   exports: [
     CommonModule,

@@ -30,6 +30,8 @@ export class AppComponent {
       url === '/logout' ||
       url === '/registration-confirmation' ||
       url.startsWith('/confirm') ||
-      url === '/reactivate-user';
+      url === '/reactivate-user' ||
+      url === '/reset-password' ||
+      url === '/forgot-password';
   }
 }

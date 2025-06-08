@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../auth.service';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-reactivate-user',
   templateUrl: './reactivate-user.component.html',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   styleUrl: './reactivate-user.component.css'
 })
 export class ReactivateUserComponent {
@@ -19,26 +19,33 @@ export class ReactivateUserComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) {
     this.reactivateForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params['email']) {
+        this.reactivateForm.patchValue({ email: params['email'] });
+      }
     });
   }
 
   onSubmit(): void {
     if (this.reactivateForm.invalid) return;
     this.loading = true;
-    const { email } = this.reactivateForm.value;
-    this.authService.reactivateUser(email).subscribe({
+    this.authService.reactivateUser(this.reactivateForm.value).subscribe({
       next: (res: any) => {
-        this.message = res.message || 'Account activated successfully. You can now log in.';
+        this.message = res.success || 'Account activated successfully. You can now log in.';
         this.error = '';
         this.loading = false;
         setTimeout(() => this.router.navigate(['/login']), 2000);
       },
       error: (err) => {
-        this.error = err.error?.message || 'Account reactivation failed.';
+        this.error = err.error?.error || 'Account reactivation failed.';
         this.message = '';
         this.loading = false;
       }

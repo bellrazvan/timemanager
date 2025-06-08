@@ -1,0 +1,45 @@
+.form-group {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #333;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  border-color: #2245e3;
+  outline: none;
+}
+
+.error {
+  color: #e53935;
+  background: #fff0f0;
+  border: 1px solid #e53935;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.success-link {
+  color: #388e3c;
+  cursor: pointer;
+  font-weight: 500;
+}
+.success-link:hover {
+  text-decoration: underline;
+  color: #28672a;
+}

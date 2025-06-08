@@ -13,6 +13,8 @@ import {CommonModule} from '@angular/common';
 export class LoginComponent {
   loginForm: FormGroup;
   error: string = '';
+  showReactivateLink: boolean = false;
+  inactiveEmail: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -36,8 +38,26 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: (err: any) => {
-        this.error = err.error?.message || 'Invalid email or password.';
+        this.handleError(err);
       }
+    });
+  }
+
+  handleError(err: any) {
+    const errorMsg = err.error?.error || 'Invalid email or password.';
+    if (errorMsg === 'Account is inactive.') {
+      this.error = errorMsg;
+      this.showReactivateLink = true;
+      this.inactiveEmail = this.loginForm.value.email;
+    } else {
+      this.error = errorMsg;
+      this.showReactivateLink = false;
+    }
+  }
+
+  goToReactivate() {
+    this.router.navigate(['/reactivate-user'], {
+      queryParams: { email: this.inactiveEmail }
     });
   }
 }

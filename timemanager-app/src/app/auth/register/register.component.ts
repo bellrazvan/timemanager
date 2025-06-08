@@ -34,7 +34,7 @@ export class RegisterComponent {
         this.router.navigate(['/registration-confirmation']);
       },
       error: (err: any): void => {
-        this.error = err.error?.message || 'Registration failed.';
+        this.error = err.error?.error || 'Registration failed.';
       },
     });
   }

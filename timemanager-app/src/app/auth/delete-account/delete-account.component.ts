@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 import {AuthService} from '../auth.service';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
@@ -11,6 +11,7 @@ import {ReactiveFormsModule} from '@angular/forms';
   styleUrl: './delete-account.component.css'
 })
 export class DeleteAccountComponent {
+  @Output() close = new EventEmitter<void>();
   message: string = '';
   error: string = '';
   loading: boolean = false;
@@ -20,18 +21,26 @@ export class DeleteAccountComponent {
     private router: Router
   ) {}
 
-  onDeleteAccount(): void {
+  confirmDelete(): void {
     this.loading = true;
     this.authService.deleteAccount().subscribe({
       next: (res: any) => {
-        this.message = res.message || 'Account deactivated successfully. You have 30 days until your account is deleted.';
+        this.message = res.success || 'Account deactivated successfully. You have 30 days until your account is deleted.';
         localStorage.removeItem('accessToken');
-        setTimeout(() => this.router.navigate(['/login']), 2000);
+        setTimeout(() => {
+          this.close.emit();
+          this.router.navigate(['/login']);
+        }, 2000);
       },
       error: (err) => {
-        this.error = err.error?.message || 'Account deletion failed.';
+        this.error = err.error?.error || 'Account deletion failed.';
         this.loading = false;
       }
     });
   }
+
+  cancelDelete(): void {
+    this.close.emit();
+  }
 }
+

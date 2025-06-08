@@ -1,11 +1,34 @@
 <header *ngIf="!isAuthPage">
-  <h1>TimeManager App</h1>
   <nav *ngIf="isAuthenticated" class="navbar">
-    <a routerLink="/reset-password" routerLinkActive="active">Reset Password</a>
-    <a routerLink="/logout" routerLinkActive="active">Logout</a>
-    <a routerLink="/delete-account" routerLinkActive="active">Delete Account</a>
-    <a routerLink="/reactivate-user" routerLinkActive="active">Reactivate Account</a>
-    <a routerLink="/confirm-account" routerLinkActive="active">Confirm Account</a>
+    <div class="navbar-logo">
+        <img src="assets/logo.svg" alt="Logo" class="logo-img">
+    </div>
+    <div class="navbar-links">
+      <button
+        class="nav-btn"
+        routerLink="/dashboard"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Dashboard
+      </button>
+      <button
+        class="nav-btn"
+        routerLink="/profile"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Profile
+      </button>
+      <button
+        class="nav-btn"
+        routerLink="/logout"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Logout
+      </button>
+    </div>
   </nav>
 </header>
 <main>

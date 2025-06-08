@@ -1,0 +1,29 @@
+<div class="page-background">
+  <div class="modal-overlay" *ngIf="showDeleteAccountModal" (click)="closeDeleteAccountModal()"></div>
+  <div class="modal-card" *ngIf="showDeleteAccountModal">
+    <app-delete-account (close)="closeDeleteAccountModal()"></app-delete-account>
+  </div>
+  <div class="profile-container">
+    <h2>My Profile</h2>
+    <div *ngIf="loading">Loading...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+    <div *ngIf="userData" class="profile-content">
+      <ul class="profile-stats">
+        <li><strong>Username:</strong> {{ userData.username }}</li>
+        <li><strong>Email:</strong> {{ userData.email }}</li>
+        <li><strong>Total Tasks:</strong> {{ userData.totalTasks }}</li>
+        <li><strong>Tasks - Done:</strong> {{ userData.totalDoneTasks }}</li>
+        <li><strong>Tasks - In Progress:</strong> {{ userData.totalInProgressTasks }}</li>
+        <li><strong>Tasks - ToDo:</strong> {{ userData.totalToDoTasks }}</li>
+      </ul>
+      <div class="delete-section">
+        <h2>Delete Account</h2>
+        <div class="center-btn">
+          <button class="blue-btn" (click)="openDeleteAccountModal()">
+            Delete Account
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

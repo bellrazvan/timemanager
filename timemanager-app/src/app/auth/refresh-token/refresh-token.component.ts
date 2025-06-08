@@ -28,7 +28,7 @@ export class RefreshTokenComponent {
         this.loading = false;
       },
       error: (err) => {
-        this.error = err.error?.message || 'Token refresh failed.';
+        this.error = err.error?.error || 'Token refresh failed.';
         this.message = '';
         this.loading = false;
       }
