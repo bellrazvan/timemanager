@@ -46,7 +46,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         final ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
-                .path("/auth/refresh")
+                .path("/api/auth/refresh")
                 .maxAge(Duration.ofDays(7))
                 .build();
 
@@ -97,7 +97,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         return ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
                 .secure(true)
-                .path("/auth/refresh")
+                .path("/api/auth/refresh")
                 .maxAge(0)
                 .build();
     }

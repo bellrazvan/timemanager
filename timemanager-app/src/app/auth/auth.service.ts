@@ -23,11 +23,11 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/refresh`, null, { withCredentials: true });
+    return this.http.post(`${this.apiUrl}/refresh`, {}, { withCredentials: true });
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/logout`, null, { withCredentials: true });
+    return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true });
   }
 
   requestPasswordReset(data: { email: string }): Observable<any> {

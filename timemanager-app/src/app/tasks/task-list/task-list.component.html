@@ -27,7 +27,11 @@
         </div>
       </li>
     </ul>
-    <div *ngIf="!loading && !tasks.length" class="no-tasks">No tasks found.</div>
+    <ng-container *ngIf="!tasks?.length && !error">
+      <div class="no-tasks-vertical-center">
+        <div class="no-tasks">No tasks found.</div>
+      </div>
+    </ng-container>
   </div>
 </div>
 

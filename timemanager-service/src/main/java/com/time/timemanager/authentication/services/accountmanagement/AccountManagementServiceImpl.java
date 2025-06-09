@@ -116,7 +116,7 @@ public class AccountManagementServiceImpl implements AccountManagementService {
         return ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
                 .secure(true)
-                .path("/auth/refresh")
+                .path("/api/auth/refresh")
                 .maxAge(0)
                 .build();
     }

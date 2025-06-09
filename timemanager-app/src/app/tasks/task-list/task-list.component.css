@@ -96,6 +96,21 @@
   margin: 18px 0;
   color: #000000;
 }
+
+.no-tasks-vertical-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  width: 100%;
+}
+.no-tasks {
+  color: #888;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
 .error {
   color: #e32222;
 }

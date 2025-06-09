@@ -4,20 +4,8 @@ import {inject} from '@angular/core';
 import {AuthService} from './auth.service';
 import {throwError} from 'rxjs';
 
-// export const authInterceptor: HttpInterceptorFn = (req, next) => {
-//   const token = localStorage.getItem('accessToken');
-//   if (token) {
-//     req = req.clone({
-//       setHeaders: {
-//         Authorization: `Bearer ${token}`
-//       }
-//     });
-//   }
-//   return next(req);
-// };
-
-
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
   const token = localStorage.getItem('accessToken');
   let authReq = req;
   if (token) {
@@ -28,8 +16,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !authReq.url.endsWith('/auth/refresh')) {
-        const authService = inject(AuthService);
+      if ((error.status === 401 || error.status === 403) && !authReq.url.endsWith('/auth/refresh')) {
         return authService.refreshToken().pipe(
           switchMap((res: any) => {
             localStorage.setItem('accessToken', res.accessToken);
