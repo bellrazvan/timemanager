@@ -38,11 +38,13 @@
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(34, 69, 227, 0.04);
   list-style: none;
-  color: #000;
   font-weight: 500;
   text-align: left;
 }
 
+.profile-stats span {
+  color: #2245e3;
+}
 
 .profile-stats li {
   margin-bottom: 1rem;

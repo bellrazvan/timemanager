@@ -9,12 +9,15 @@
     <div *ngIf="error" class="error">{{ error }}</div>
     <div *ngIf="userData" class="profile-content">
       <ul class="profile-stats">
-        <li><strong>Username:</strong> {{ userData.username }}</li>
-        <li><strong>Email:</strong> {{ userData.email }}</li>
-        <li><strong>Total Tasks:</strong> {{ userData.totalTasks }}</li>
-        <li><strong>Tasks - Done:</strong> {{ userData.totalDoneTasks }}</li>
-        <li><strong>Tasks - In Progress:</strong> {{ userData.totalInProgressTasks }}</li>
-        <li><strong>Tasks - ToDo:</strong> {{ userData.totalToDoTasks }}</li>
+        <li><span>Username:</span> {{ userData.username }}</li>
+        <li><span>Email:</span> {{ userData.email }}</li>
+      </ul>
+      <h2>Tasks</h2>
+      <ul class="profile-stats">
+        <li><span>Total Tasks:</span> {{ userData.totalTasks }}</li>
+        <li><span>Done:</span> {{ userData.totalDoneTasks }}</li>
+        <li><span>In Progress:</span> {{ userData.totalInProgressTasks }}</li>
+        <li><span>ToDo:</span> {{ userData.totalToDoTasks }}</li>
       </ul>
       <div class="delete-section">
         <h2>Delete Account</h2>

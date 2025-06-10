@@ -237,3 +237,16 @@ body {
   min-width: 340px;
   max-width: 90vw;
 }
+
+.task-card {
+  min-width: 400px;
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(34, 69, 227, 0.18);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

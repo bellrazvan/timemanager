@@ -3,6 +3,8 @@ import { TaskService, Task } from '../task.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {TaskCreateComponent} from '../task-create/task-create.component';
+import {TaskDetailComponent} from '../task-detail/task-detail.component';
+import {TaskEditComponent} from '../task-edit/task-edit.component';
 
 @Component({
   selector: 'app-task-list',
@@ -11,7 +13,9 @@ import {TaskCreateComponent} from '../task-create/task-create.component';
     NgForOf,
     NgIf,
     FormsModule,
-    TaskCreateComponent
+    TaskCreateComponent,
+    TaskDetailComponent,
+    TaskEditComponent
   ],
   styleUrl: './task-list.component.css'
 })
@@ -20,6 +24,15 @@ export class TaskListComponent implements OnInit {
   loading = false;
   error = '';
   showCreateTaskModal = false;
+  showTaskDetailModal = false;
+  selectedTask: Task | undefined = undefined;
+  showEditTaskModal = false;
+  taskToEdit: Task | undefined = undefined;
+  statusOptions = [
+    { value: 'TODO', label: 'To Do' },
+    { value: 'IN_PROGRESS', label: 'In Progress' },
+    { value: 'DONE', label: 'Done' }
+  ];
 
   constructor(private taskService: TaskService) {}
 
@@ -55,12 +68,56 @@ export class TaskListComponent implements OnInit {
     this.showCreateTaskModal = false;
   }
 
-  markDone(task: Task) {
-    this.taskService.updateTask({ ...task, status: 'DONE' }).subscribe({
+  openTaskDetail(task: Task) {
+    this.loading = true;
+    this.taskService.getTaskById(task.id).subscribe({
+      next: (fetchedTask) => {
+        this.selectedTask = fetchedTask;
+        this.showTaskDetailModal = true;
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Failed to load task details';
+        this.loading = false;
+      }
+    });
+  }
+
+  closeTaskDetail() {
+    this.showTaskDetailModal = false;
+    this.selectedTask = undefined;
+  }
+
+  openEditTask(task: Task) {
+    this.taskToEdit = { ...task };
+    this.showEditTaskModal = true;
+    this.showTaskDetailModal = false;
+  }
+
+  onTaskEdited(updatedTask: Task) {
+    this.fetchTasks();
+    this.closeEditTask();
+    this.selectedTask = updatedTask;
+    this.showTaskDetailModal = true;
+  }
+
+  closeEditTask() {
+    this.showEditTaskModal = false;
+    this.taskToEdit = undefined;
+    this.showTaskDetailModal = true;
+  }
+
+  onStatusChange(task: Task, event: Event) {
+    const newStatus = (event.target as HTMLSelectElement).value;
+    if (task.status === newStatus) return;
+    const updatedTask = { ...task, status: newStatus };
+    this.taskService.updateTask(updatedTask).subscribe({
       next: (updated) => {
         task.status = updated.status;
       },
-      error: () => this.error = 'Failed to update task'
+      error: (err) => {
+        alert('Failed to update status');
+      }
     });
   }
 

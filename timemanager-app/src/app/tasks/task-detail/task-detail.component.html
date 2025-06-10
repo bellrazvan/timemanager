@@ -1,1 +1,38 @@
-<p>task-detail works!</p>
+<div class="task-card">
+  <h3>Task Details</h3>
+  <div class="detail-group">
+    <label>Title</label>
+    <div class="detail-value">{{ task?.title }}</div>
+    <label>Description</label>
+    <div class="detail-value">{{ task?.description || '-' }}</div>
+    <label class="detail-label">Status:</label>
+    <div class="detail-value">{{ getStatusLabel(task?.status) }}</div>
+    <label>Priority</label>
+    <div class="detail-value">{{ getPriorityLabel(task?.priority) }}</div>
+    <label>Category</label>
+    <div class="detail-value">{{ getCategoryLabel(task?.category) }}</div>
+    <label>Due Date</label>
+    <div class="detail-value" *ngIf="task as t">
+      {{ t.dueDate ? (t.dueDate | date:'mediumDate') : '-' }}
+    </div>
+    <div class="detail-value" *ngIf="!task">
+      -
+    </div>
+    <div class="checkbox">
+        <span>Notify before due date:</span>
+        <span class="emoji-indicator">
+          {{ task?.notificationBeforeDueDate ? '✅' : '❌' }}
+        </span><br>
+    </div>
+    <div class="checkbox">
+        <span>Notify if overdue:</span>
+        <span class="emoji-indicator">
+          {{ task?.notificationOverdue ? '✅' : '❌' }}
+        </span>
+    </div>
+  </div>
+    <div class="form-actions">
+      <button type="button" class="blue-btn" (click)="edit.emit(task)">Edit</button>
+      <button type="button" class="cancel-btn" (click)="close.emit()">Close</button>
+    </div>
+</div>

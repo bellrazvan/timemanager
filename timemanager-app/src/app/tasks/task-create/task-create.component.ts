@@ -3,12 +3,6 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {TaskService} from '../task.service';
 import {NgForOf, NgIf} from '@angular/common';
 
-export type Priority = 'LOW' | 'MEDIUM' | 'HIGH';
-export type Category =
-  | 'WORK' | 'PERSONAL' | 'HEALTH' | 'FINANCE' | 'EDUCATION'
-  | 'SHOPPING' | 'HOME' | 'SOCIAL' | 'TRAVEL' | 'HOBBY'
-  | 'ERRANDS' | 'MEETINGS' | 'GOALS' | 'PROJECTS' | 'OTHER';
-
 @Component({
   selector: 'app-task-create',
   templateUrl: './task-create.component.html',
@@ -24,11 +18,27 @@ export class TaskCreateComponent {
   @Output() taskCreated = new EventEmitter<any>();
 
   taskForm: FormGroup;
-  priorities: Priority[] = ['LOW', 'MEDIUM', 'HIGH'];
-  categories: Category[] = [
-    'WORK', 'PERSONAL', 'HEALTH', 'FINANCE', 'EDUCATION',
-    'SHOPPING', 'HOME', 'SOCIAL', 'TRAVEL', 'HOBBY',
-    'ERRANDS', 'MEETINGS', 'GOALS', 'PROJECTS', 'OTHER'
+  priorityOptions = [
+    { value: 'LOW', label: 'Low' },
+    { value: 'MEDIUM', label: 'Medium' },
+    { value: 'HIGH', label: 'High' }
+  ];
+  categoryOptions = [
+    { value: 'WORK', label: 'Work' },
+    { value: 'PERSONAL', label: 'Personal' },
+    { value: 'HEALTH', label: 'Health' },
+    { value: 'FINANCE', label: 'Finance' },
+    { value: 'EDUCATION', label: 'Education' },
+    { value: 'SHOPPING', label:'Shopping' },
+    { value: 'HOME', label: 'Home' },
+    { value: 'SOCIAL', label: 'Social' },
+    { value: 'TRAVEL', label: 'Travel' },
+    { value: 'HOBBY', label: 'Hobby' },
+    { value: 'ERRANDS', label: 'Errands' },
+    { value: 'MEETINGS', label: 'Meetings' },
+    { value: 'GOALS', label: 'Goals' },
+    { value: 'PROJECTS', label: 'Projects' },
+    { value: 'OTHER', label: 'Others' }
   ];
   loading = false;
   error = '';

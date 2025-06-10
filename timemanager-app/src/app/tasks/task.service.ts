@@ -27,6 +27,10 @@ export class TaskService {
     return this.http.get<Task[]>(this.apiUrl);
   }
 
+  getTaskById(id: number): Observable<Task> {
+    return this.http.get<Task>(`${this.apiUrl}/${id}`);
+  }
+
   addTask(task: Partial<Task>): Observable<Task> {
     return this.http.post<Task>(this.apiUrl, task, { withCredentials: true });
   }
