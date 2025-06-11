@@ -48,7 +48,7 @@ export class TaskListComponent implements OnInit {
         this.tasks = tasks;
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.error = 'Failed to load tasks';
         this.loading = false;
       }
@@ -63,7 +63,7 @@ export class TaskListComponent implements OnInit {
     this.showCreateTaskModal = false;
   }
 
-  onTaskCreated(task: any) {
+  onTaskCreated() {
     this.fetchTasks();
     this.showCreateTaskModal = false;
   }
@@ -115,7 +115,7 @@ export class TaskListComponent implements OnInit {
       next: (updated) => {
         task.status = updated.status;
       },
-      error: (err) => {
+      error: () => {
         alert('Failed to update status');
       }
     });

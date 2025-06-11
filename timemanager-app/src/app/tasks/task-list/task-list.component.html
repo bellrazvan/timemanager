@@ -34,18 +34,21 @@
 
     <ul class="task-list" *ngIf="!loading && tasks.length">
       <li class="task-item" *ngFor="let task of tasks">
-        <span class="task-text" [class.completed]="task.status === 'DONE'">{{ task.title }}</span>
+        <span class="task-text" [class.done]="task.status === 'DONE'">
+          {{ task.title }}
+        </span>
         <div>
           <span class="task-text">Status:</span>
           <select
             class="status-dropdown"
-            [value]="task.status"
-            (change)="onStatusChange(task, $event)">
+            [ngModel]="task.status"
+            (change)="onStatusChange(task, $event)"
+          >
             <option *ngFor="let option of statusOptions" [value]="option.value">
               {{ option.label }}
             </option>
           </select>
-          <button class="task-action-btn" (click)="openTaskDetail(task)">View</button>
+          <button class="task-action-btn view" (click)="openTaskDetail(task)">View</button>
           <button class="task-action-btn delete" (click)="deleteTask(task)">Delete</button>
         </div>
       </li>
