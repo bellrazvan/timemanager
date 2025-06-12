@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {TaskService} from '../task.service';
 import {NgForOf, NgIf} from '@angular/common';
+import { priorityOptions, categoryOptions } from '../../shared/task-options';
 
 @Component({
   selector: 'app-task-create',
@@ -18,28 +19,6 @@ export class TaskCreateComponent {
   @Output() taskCreated = new EventEmitter<any>();
 
   taskForm: FormGroup;
-  priorityOptions = [
-    { value: 'LOW', label: 'Low' },
-    { value: 'MEDIUM', label: 'Medium' },
-    { value: 'HIGH', label: 'High' }
-  ];
-  categoryOptions = [
-    { value: 'WORK', label: 'Work' },
-    { value: 'PERSONAL', label: 'Personal' },
-    { value: 'HEALTH', label: 'Health' },
-    { value: 'FINANCE', label: 'Finance' },
-    { value: 'EDUCATION', label: 'Education' },
-    { value: 'SHOPPING', label:'Shopping' },
-    { value: 'HOME', label: 'Home' },
-    { value: 'SOCIAL', label: 'Social' },
-    { value: 'TRAVEL', label: 'Travel' },
-    { value: 'HOBBY', label: 'Hobby' },
-    { value: 'ERRANDS', label: 'Errands' },
-    { value: 'MEETINGS', label: 'Meetings' },
-    { value: 'GOALS', label: 'Goals' },
-    { value: 'PROJECTS', label: 'Projects' },
-    { value: 'OTHER', label: 'Others' }
-  ];
   loading = false;
   error = '';
 
@@ -95,5 +74,8 @@ export class TaskCreateComponent {
     if (typeof date === 'string') return date;
     return date.toISOString().slice(0, 10);
   }
+
+  protected readonly priorityOptions = priorityOptions;
+  protected readonly categoryOptions = categoryOptions;
 }
 

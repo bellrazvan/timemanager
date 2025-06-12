@@ -37,7 +37,6 @@
   position: relative;
   overflow: hidden;
   background: transparent;
-  z-index: 1;
   color: #fff;
   transition: color 0.3s cubic-bezier(.4,2,.6,1);
 }
@@ -52,7 +51,6 @@
   transform: scaleY(0);
   transform-origin: bottom;
   transition: transform 0.35s cubic-bezier(.4,2,.6,1);
-  z-index: 0;
   pointer-events: none;
 }
 

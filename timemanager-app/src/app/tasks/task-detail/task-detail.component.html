@@ -1,17 +1,17 @@
 <div class="task-card">
   <h3>Task Details</h3>
   <div class="detail-group">
-    <label>Title</label>
+    <label>Title:</label>
     <div class="detail-value">{{ task?.title }}</div>
-    <label>Description</label>
+    <label>Description:</label>
     <div class="detail-value">{{ task?.description || '-' }}</div>
     <label class="detail-label">Status:</label>
     <div class="detail-value">{{ getStatusLabel(task?.status) }}</div>
-    <label>Priority</label>
+    <label>Priority:</label>
     <div class="detail-value">{{ getPriorityLabel(task?.priority) }}</div>
-    <label>Category</label>
+    <label>Category:</label>
     <div class="detail-value">{{ getCategoryLabel(task?.category) }}</div>
-    <label>Due Date</label>
+    <label>Due Date:</label>
     <div class="detail-value" *ngIf="task as t">
       {{ t.dueDate ? (t.dueDate | date:'mediumDate') : '-' }}
     </div>

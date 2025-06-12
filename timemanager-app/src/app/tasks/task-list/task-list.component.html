@@ -22,25 +22,39 @@
       (taskEdited)="onTaskEdited($event)">
     </app-task-edit>
   </div>
+
   <div class="page-container">
     <h2>My Tasks</h2>
     <div class="tasklist-actions">
-      <div class="tasklist-actions center-btn">
+      <div class="tasklist-filter">
+        <label>Filter by Status:</label>
+        <select
+          class="dropdown"
+          [(ngModel)]="statusFilter"
+          (change)="onStatusFilterChange()"
+        >
+          <option value="">All</option>
+          <option *ngFor="let option of statusOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+      <div class="create-button">
         <button class="blue-btn" (click)="openCreateTask()">Create Task</button>
       </div>
     </div>
 
-    <div *ngIf="loading" class="loading">Loading tasks...</div>
+    <div *ngIf="loading" class="no-tasks">Loading tasks...</div>
 
     <ul class="task-list" *ngIf="!loading && tasks.length">
-      <li class="task-item" *ngFor="let task of tasks">
+      <li class="task-item" *ngFor="let task of pagedTasks">
         <span class="task-text" [class.done]="task.status === 'DONE'">
           {{ task.title }}
         </span>
         <div>
-          <span class="task-text">Status:</span>
+          <span class="status-text">Status:</span>
           <select
-            class="status-dropdown"
+            class="dropdown"
             [ngModel]="task.status"
             (change)="onStatusChange(task, $event)"
           >
@@ -53,7 +67,14 @@
         </div>
       </li>
     </ul>
-    <ng-container *ngIf="!tasks?.length && !error">
+    <div class="pagination-wrapper">
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button (click)="prevPage()" [disabled]="page === 1"><</button>
+        <span>Page {{ page }} of {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="page === totalPages">></button>
+      </div>
+    </div>
+    <ng-container *ngIf="!loading && !filteredTasks.length && !error">
       <div class="no-tasks-vertical-center">
         <div class="no-tasks">No tasks found.</div>
       </div>

@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { TaskService, Task } from '../task.service';
 import { NgForOf, NgIf } from '@angular/common';
+import { statusOptions, priorityOptions, categoryOptions } from '../../shared/task-options';
 
 @Component({
   selector: 'app-task-edit',
@@ -16,33 +17,6 @@ export class TaskEditComponent implements OnChanges {
   @Output() taskEdited = new EventEmitter<Task>();
 
   taskForm: FormGroup;
-  statusOptions = [
-    { value: 'TODO', label: 'To Do' },
-    { value: 'IN_PROGRESS', label: 'In Progress' },
-    { value: 'DONE', label: 'Done' }
-  ];
-  priorityOptions = [
-    { value: 'LOW', label: 'Low' },
-    { value: 'MEDIUM', label: 'Medium' },
-    { value: 'HIGH', label: 'High' }
-  ];
-  categoryOptions = [
-    { value: 'WORK', label: 'Work' },
-    { value: 'PERSONAL', label: 'Personal' },
-    { value: 'HEALTH', label: 'Health' },
-    { value: 'FINANCE', label: 'Finance' },
-    { value: 'EDUCATION', label: 'Education' },
-    { value: 'SHOPPING', label:'Shopping' },
-    { value: 'HOME', label: 'Home' },
-    { value: 'SOCIAL', label: 'Social' },
-    { value: 'TRAVEL', label: 'Travel' },
-    { value: 'HOBBY', label: 'Hobby' },
-    { value: 'ERRANDS', label: 'Errands' },
-    { value: 'MEETINGS', label: 'Meetings' },
-    { value: 'GOALS', label: 'Goals' },
-    { value: 'PROJECTS', label: 'Projects' },
-    { value: 'OTHER', label: 'Others' }
-  ];
   loading = false;
   error = '';
 
@@ -108,4 +82,8 @@ export class TaskEditComponent implements OnChanges {
     if (typeof date === 'string') return date;
     return date.toISOString().slice(0, 10);
   }
+
+  protected readonly statusOptions = statusOptions;
+  protected readonly priorityOptions = priorityOptions;
+  protected readonly categoryOptions = categoryOptions;
 }
