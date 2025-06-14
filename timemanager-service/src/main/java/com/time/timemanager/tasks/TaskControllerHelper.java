@@ -2,6 +2,7 @@ package com.time.timemanager.tasks;
 
 import com.time.timemanager.config.ApiResponseMapper;
 import com.time.timemanager.tasks.dtos.TaskCreateRequest;
+import com.time.timemanager.tasks.dtos.TaskListResponse;
 import com.time.timemanager.tasks.dtos.TaskResponse;
 import com.time.timemanager.tasks.dtos.TaskUpdateRequest;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,9 @@ public class TaskControllerHelper {
         return ResponseEntity.ok(createdTask);
     }
 
-    public ResponseEntity<List<TaskResponse>> getTasks(Authentication auth) {
+    public ResponseEntity<List<TaskListResponse>> getTasks(Authentication auth) {
         final String email = auth.getName();
-        final List<TaskResponse> tasks = this.taskService.getTasks(email);
+        final List<TaskListResponse> tasks = this.taskService.getTasks(email);
 
         return ResponseEntity.ok(tasks);
     }

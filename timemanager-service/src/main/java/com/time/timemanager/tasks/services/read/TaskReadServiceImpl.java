@@ -1,6 +1,7 @@
 package com.time.timemanager.tasks.services.read;
 
 import com.time.timemanager.tasks.TaskRepository;
+import com.time.timemanager.tasks.dtos.TaskListResponse;
 import com.time.timemanager.tasks.dtos.TaskMapper;
 import com.time.timemanager.tasks.dtos.TaskResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,9 @@ public class TaskReadServiceImpl implements TaskReadService {
     private final TaskMapper taskMapper;
 
     @Override
-    public List<TaskResponse> getTasks(final String email) {
+    public List<TaskListResponse> getTasks(final String email) {
         return this.taskRepository.findByUserEmail(email).stream()
-                .map(this.taskMapper::toTaskResponse)
+                .map(this.taskMapper::toTaskListResponse)
                 .toList();
     }
 

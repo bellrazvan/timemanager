@@ -1,5 +1,6 @@
 package com.time.timemanager.tasks;
 
+import com.time.timemanager.tasks.dtos.TaskListResponse;
 import com.time.timemanager.tasks.services.create.TaskCreateService;
 import com.time.timemanager.tasks.services.delete.TaskDeleteService;
 import com.time.timemanager.tasks.dtos.TaskCreateRequest;
@@ -27,7 +28,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponse> getTasks(final String email) {
+    public List<TaskListResponse> getTasks(final String email) {
         return this.taskReadService.getTasks(email);
     }
 

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -66,6 +67,22 @@ public class AccountManagementServiceImpl implements AccountManagementService {
 
         return ResponseEntity.ok(ApiResponseMapper.successfulResponse("Account activated successfully."));
     }
+
+    @Override
+    public ResponseEntity<?> getUserStatus(final String email) {
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.badRequest().body(ApiResponseMapper.errorResponse("Email is required."));
+        }
+
+        final Optional<User> userOpt = this.userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body(ApiResponseMapper.errorResponse("User not found."));
+        }
+
+        final UserStatus status = userOpt.get().getStatus();
+        return ResponseEntity.ok(Map.of("status", status.name()));
+    }
+
 
     @Override
     public ResponseEntity<?> getUserDetails(final Authentication auth) {

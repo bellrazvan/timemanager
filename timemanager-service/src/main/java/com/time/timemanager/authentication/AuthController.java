@@ -58,6 +58,11 @@ public class AuthController {
         return this.authService.reactivateUser(request);
     }
 
+    @GetMapping("/user-status")
+    public ResponseEntity<?> getUserStatus(@RequestParam final String email) {
+        return this.authService.getUserStatus(email);
+    }
+
     @GetMapping("/user-details")
     public ResponseEntity<?> getUserDetails(final Authentication auth) {
         return this.authService.getUserDetails(auth);

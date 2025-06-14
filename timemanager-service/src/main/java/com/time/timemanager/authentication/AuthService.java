@@ -23,6 +23,8 @@ public interface AuthService {
 
     ResponseEntity<?> reactivateUser(final ReactivateUserRequest request);
 
+    ResponseEntity<?> getUserStatus(final String email);
+
     ResponseEntity<?> getUserDetails(final Authentication auth);
 }
 

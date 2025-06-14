@@ -1,6 +1,7 @@
 package com.time.timemanager.tasks;
 
 import com.time.timemanager.tasks.dtos.TaskCreateRequest;
+import com.time.timemanager.tasks.dtos.TaskListResponse;
 import com.time.timemanager.tasks.dtos.TaskResponse;
 import com.time.timemanager.tasks.dtos.TaskUpdateRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskResponse>> getTasks(final Authentication auth) {
+    public ResponseEntity<List<TaskListResponse>> getTasks(final Authentication auth) {
         return this.taskControllerHelper.getTasks(auth);
     }
 

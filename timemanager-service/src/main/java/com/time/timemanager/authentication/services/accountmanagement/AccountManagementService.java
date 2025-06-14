@@ -30,6 +30,9 @@ public interface AccountManagementService {
      */
     ResponseEntity<?> reactivateUser(final ReactivateUserRequest request);
 
+
+    ResponseEntity<?> getUserStatus(final String email);
+
     /**
      * Retrieves the details of the currently authenticated user.
      *

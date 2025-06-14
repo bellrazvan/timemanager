@@ -64,6 +64,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public ResponseEntity<?> getUserStatus(final String email) {
+        return this.accountManagementService.getUserStatus(email);
+    }
+
+    @Override
     public ResponseEntity<?> getUserDetails(final Authentication auth) {
         return this.accountManagementService.getUserDetails(auth);
     }

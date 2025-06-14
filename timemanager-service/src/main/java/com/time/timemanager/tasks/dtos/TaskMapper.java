@@ -23,6 +23,16 @@ public class TaskMapper {
                 .build();
     }
 
+    public TaskListResponse toTaskListResponse(Task task) {
+        return new TaskListResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getPriority(),
+                task.getStatus(),
+                task.getDueDate()
+        );
+    }
+
     public TaskResponse toTaskResponse(Task task) {
         return new TaskResponse(
                 task.getId(),

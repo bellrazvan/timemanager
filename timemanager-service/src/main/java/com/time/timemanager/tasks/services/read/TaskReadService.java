@@ -1,5 +1,6 @@
 package com.time.timemanager.tasks.services.read;
 
+import com.time.timemanager.tasks.dtos.TaskListResponse;
 import com.time.timemanager.tasks.dtos.TaskResponse;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public interface TaskReadService {
      * @param email the email address of the user whose tasks are to be retrieved
      * @return a List of TaskResponse objects representing the tasks associated with the given email
      */
-    List<TaskResponse> getTasks(final String email);
+    List<TaskListResponse> getTasks(final String email);
 
     /**
      * Retrieves a task associated with the specified task ID and email address.
