@@ -45,13 +45,31 @@ export class LoginComponent {
 
   handleError(err: any) {
     const errorMsg = err.error?.error || 'Invalid email or password.';
+
     if (errorMsg === 'Account is inactive.') {
       this.error = errorMsg;
       this.showReactivateLink = true;
       this.inactiveEmail = this.loginForm.value.email;
     } else {
-      this.error = errorMsg;
-      this.showReactivateLink = false;
+      this.authService.getUserStatus(this.loginForm.value.email).subscribe({
+        next: (res: any) => {
+          if (res.status === 'INACTIVE') {
+            this.error = 'Account is inactive.';
+            this.showReactivateLink = true;
+            this.inactiveEmail = this.loginForm.value.email;
+          } else if (res.status === 'UNCONFIRMED') {
+            this.error = 'Account is not confirmed yet.';
+            this.showReactivateLink = false;
+          } else {
+            this.error = errorMsg;
+            this.showReactivateLink = false;
+          }
+        },
+        error: () => {
+          this.error = errorMsg;
+          this.showReactivateLink = false;
+        }
+      });
     }
   }
 

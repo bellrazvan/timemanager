@@ -46,6 +46,10 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/activate-user`, data);
   }
 
+  getUserStatus(email: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user-status?email=${encodeURIComponent(email)}`);
+  }
+
   getUserDetails(): Observable<any> {
     return this.http.get(`${this.apiUrl}/user-details`, { withCredentials: true });
   }

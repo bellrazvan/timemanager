@@ -5,7 +5,7 @@ import {FormsModule} from '@angular/forms';
 import {TaskCreateComponent} from '../task-create/task-create.component';
 import {TaskDetailComponent} from '../task-detail/task-detail.component';
 import {TaskEditComponent} from '../task-edit/task-edit.component';
-import { statusOptions } from '../../shared/task-options';
+import {priorityOptions, statusOptions} from '../../shared/task-options';
 
 const PAGE_SIZE = 11;
 @Component({
@@ -33,7 +33,7 @@ export class TaskListComponent implements OnInit {
   showEditTaskModal = false;
   taskToEdit: Task | undefined = undefined;
   statusFilter: string = '';
-
+  priorityFilter: string = '';
 
   page = 1;
   pageSize = PAGE_SIZE;
@@ -51,7 +51,7 @@ export class TaskListComponent implements OnInit {
     this.taskService.getTasks().subscribe({
       next: (tasks) => {
         this.tasks = tasks;
-        this.applyFilter();
+        this.applyFilters();
         this.totalPages = Math.ceil(this.tasks.length / this.pageSize) || 1;
         this.page = 1;
         this.updatePagedTasks();
@@ -64,17 +64,21 @@ export class TaskListComponent implements OnInit {
     });
   }
 
-  applyFilter() {
-    this.filteredTasks = this.statusFilter
-      ? this.tasks.filter(task => task.status === this.statusFilter)
-      : this.tasks.slice();
-    this.totalPages = Math.ceil(this.filteredTasks.length / this.pageSize) || 1;
-    this.page = 1;
+  applyFilters() {
+    this.filteredTasks = this.tasks.filter(task => {
+      const statusMatch = !this.statusFilter || task.status === this.statusFilter;
+      const priorityMatch = !this.priorityFilter || task.priority === this.priorityFilter;
+      return statusMatch && priorityMatch;
+    });
     this.updatePagedTasks();
   }
 
   onStatusFilterChange() {
-    this.applyFilter();
+    this.applyFilters();
+  }
+
+  onPriorityFilterChange() {
+    this.applyFilters();
   }
 
   updatePagedTasks() {
@@ -164,13 +168,12 @@ export class TaskListComponent implements OnInit {
     this.taskService.deleteTask(task.id).subscribe({
       next: () => {
         this.tasks = this.tasks.filter(t => t.id !== task.id);
-        this.totalPages = Math.ceil(this.tasks.length / this.pageSize) || 1;
-        if (this.page > this.totalPages) this.page = this.totalPages;
-        this.updatePagedTasks();
+        this.applyFilters();
       },
       error: () => this.error = 'Failed to delete task'
     });
   }
 
   protected readonly statusOptions = statusOptions;
+  protected readonly priorityOptions = priorityOptions;
 }

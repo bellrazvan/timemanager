@@ -1,6 +1,7 @@
 .detail-value {
   padding: 6px 0 6px 0;
   font-size: 1rem;
+  font-weight: 500;
   color: #222;
   word-break: break-word;
   text-align: left;

@@ -14,6 +14,7 @@ import { statusOptions, priorityOptions, categoryOptions} from '../../shared/tas
   standalone: true
 })
 export class TaskDetailComponent {
+  @Input() openedFromCalendar: boolean = false;
   @Input() task: Task | undefined = undefined;
   @Output() close = new EventEmitter<void>();
   @Output() edit = new EventEmitter<Task>();

@@ -13,11 +13,13 @@ import {TaskListComponent} from './tasks/task-list/task-list.component';
 import {authRedirectGuard} from './auth/auth-redirect.guard';
 import {guestRedirectGuard} from './auth/guest-redirect.guard';
 import {UserProfileComponent} from './auth/user-profile/user-profile.component';
+import {CalendarComponent} from './tasks/calendar/calendar.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'dashboard', component: TaskListComponent, canActivate: [authRedirectGuard] },
   { path: 'profile', component: UserProfileComponent, canActivate: [authRedirectGuard] },
+  { path: 'calendar', component: CalendarComponent, canActivate: [authRedirectGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [guestRedirectGuard] },
   { path: 'registration-confirmation', component: RegistrationConfirmationComponent, canActivate: [guestRedirectGuard] },
   { path: 'login', component: LoginComponent, canActivate: [guestRedirectGuard] },

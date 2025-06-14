@@ -32,7 +32,14 @@
     </div>
   </div>
     <div class="form-actions">
-      <button type="button" class="blue-btn" (click)="edit.emit(task)">Edit</button>
+      <button
+        type="button"
+        class="blue-btn"
+        *ngIf="!openedFromCalendar"
+        (click)="edit.emit(task)"
+      >
+        Edit
+      </button>
       <button type="button" class="cancel-btn" (click)="close.emit()">Close</button>
     </div>
 </div>

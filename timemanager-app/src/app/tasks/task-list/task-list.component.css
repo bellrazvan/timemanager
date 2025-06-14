@@ -85,7 +85,19 @@
 }
 
 .task-item:hover {
-  background: rgba(34, 34, 34, 0.06);
+  background: #e6edff;
+}
+
+.task-item:hover .task-text:not(.done) {
+  color: #2245e3;
+}
+
+.task-item:hover .task-text.done {
+  color: #8b95c8;
+}
+
+.task-item:hover .status-text {
+  color: #2245e3;
 }
 
 @media (max-width: 600px) {
@@ -164,12 +176,22 @@
 }
 
 .tasklist-filter {
+  display: flex;
+  gap: 32px;
+  align-items: center;
   margin-left: 6.3%;
-  display: inline-block;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .tasklist-filter label {
   color: #2245e3;
+  font-weight: 500;
+  margin-bottom: 2px;
 }
 
 .dropdown {
@@ -194,6 +216,7 @@
 
 .dropdown option {
   color: #222;
+  font-weight: 500;
   background: #fff;
 }
 
@@ -203,6 +226,7 @@
   color: #444;
   font-size: 0.97rem;
   vertical-align: middle;
+  transition: color 0.2s;
 }
 
 .status-text {
@@ -232,7 +256,13 @@
 
 .task-item:has(.task-action-btn.delete:hover) {
   border-color: #e32222;
-  box-shadow: 0 0 0 2px rgba(227,34,34,0.08);
+  color: inherit !important;
+  background: #f7f7f7;
+  box-shadow: 0 0 0 2px rgba(227,34,34,0.16);
+}
+
+.task-item:has(.task-action-btn.delete:hover) .task-text {
+  color: #e32222 !important;
 }
 
 .task-item:has(.task-action-btn.delete:hover)::before {
@@ -256,6 +286,11 @@
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s;
+}
+
+.pagination span {
+  color: #222;
+  font-weight: 500;
 }
 
 .pagination button:hover {

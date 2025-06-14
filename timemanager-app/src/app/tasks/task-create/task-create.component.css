@@ -37,6 +37,7 @@ h3 {
 .form-group textarea {
   min-height: 60px;
   resize: vertical;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
 .checkbox-group {

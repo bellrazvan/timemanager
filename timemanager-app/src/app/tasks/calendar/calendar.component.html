@@ -1,0 +1,95 @@
+<div class="page-background">
+  <div class="modal-overlay" *ngIf="showTaskDetailModal" (click)="closeTaskDetail()"></div>
+  <div class="modal-card" *ngIf="showTaskDetailModal">
+    <app-task-detail
+      [task]="selectedTask"
+      [openedFromCalendar]="openedFromCalendar"
+      (close)="closeTaskDetail()"
+    ></app-task-detail>
+  </div>
+  <div class="page-container calendar-container">
+    <h2>Task Calendar</h2>
+
+    <div *ngIf="loading" class="loading">Loading...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+    <h3>{{ monthNames[currentMonth] }} {{ currentYear }}</h3>
+    <div class="calendar">
+      <div class="calendar-row calendar-header">
+        <div *ngFor="let day of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" class="calendar-cell header">
+          {{ day }}
+        </div>
+      </div>
+      <div class="calendar-row" *ngFor="let week of getCalendarWeeks()">
+        <div *ngFor="let day of week" class="calendar-cell"
+             [class.today]="day && !day.isOtherMonth && isToday(day.date)"
+             [class.other-month]="day?.isOtherMonth"
+             [class.empty-cell]="!day">
+          <div *ngIf="day">
+            <span class="calendar-date">{{ day.date.getDate() }}</span>
+            <ul class="calendar-tasks" *ngIf="!day.isOtherMonth">
+              <li *ngFor="let task of day.tasks" class="calendar-task">
+                <span
+                  class="task-dot"
+                  [ngStyle]="getTaskDotStyles(task)"
+                ></span>
+                <span
+                  class="calendar-task-title"
+                  title="{{ task.title }}"
+                  (click)="openTaskDetail(task)"
+                >
+                  {{ task.title }}
+                </span>
+              </li>
+            </ul>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="calendar-legend">
+      <div class="legend-title">Legend</div>
+      <div class="legend-row">
+        <span class="task-dot legend-dot" style="background-color: #e53935; border: 2px solid #fff;"></span>
+        <span>High Priority</span>
+      </div>
+      <div class="legend-row">
+        <span class="task-dot legend-dot" style="background-color: #fb8c00; border: 2px solid #fff"></span>
+        <span>Medium Priority</span>
+      </div>
+      <div class="legend-row">
+        <span class="task-dot legend-dot" style="background-color: #43a047; border: 2px solid #fff"></span>
+        <span>Low Priority</span>
+      </div>
+      <div class="legend-row">
+        <span class="task-dot legend-dot" style="border: 2px solid #222;"></span>
+        <span>To Do</span>
+      </div>
+      <div class="legend-row">
+        <span class="task-dot legend-dot" style="border: 2px solid #1976d2;"></span>
+        <span>In Progress</span>
+      </div>
+      <div class="legend-row">
+        <span class="task-dot legend-dot" style="border: 2px solid #616161;"></span>
+        <span>Done</span>
+      </div>
+      <div class="legend-row">
+        <span class="task-dot legend-dot" style="border: 2px solid #e53935;"></span>
+        <span>Overdue</span>
+      </div>
+    </div>
+    <div class="pagination-wrapper">
+      <div class="pagination">
+        <button (click)="prevMonth()" aria-label="Previous Month">
+          <svg width="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+            <polyline points="13 5 7 10 13 15" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button (click)="nextMonth()" aria-label="Next Month">
+          <svg width="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+            <polyline points="7 5 13 10 7 15" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
