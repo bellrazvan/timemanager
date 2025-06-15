@@ -2,10 +2,13 @@ package com.time.timemanager.tasks;
 
 import com.time.timemanager.authentication.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -16,6 +19,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
      * @param email the email of the user whose tasks are to be retrieved
      * @return a list of tasks associated with the given user email
      */
+    @Query("SELECT t FROM Task t JOIN FETCH t.user WHERE t.user.email = :email")
     List<Task> findByUserEmail(String email);
 
     /**
@@ -25,6 +29,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
      * @param email  the email of the user whose tasks are to be retrieved
      * @return a list of tasks matching the specified status and user email
      */
+    @Query("SELECT t FROM Task t JOIN FETCH t.user WHERE t.status = :status AND t.user.email = :email")
     List<Task> findByStatusAndUserEmail(String status, String email);
 
     /**
@@ -34,6 +39,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
      * @param email the email of the user associated with the task
      * @return an optional containing the task if found, or empty if not found
      */
+    @Query("SELECT t FROM Task t JOIN FETCH t.user WHERE t.id = :id AND t.user.email = :email")
     Optional<Task> findByIdAndUserEmail(Long id, String email);
 
     /**
@@ -62,4 +68,16 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
      * @param user the user whose tasks are to be deleted
      */
     void deleteByUser(User user);
+
+    @Query("""
+    SELECT new map(
+        COUNT(t) as total,
+        SUM(CASE WHEN t.status = 'DONE' THEN 1 ELSE 0 END) as done,
+        SUM(CASE WHEN t.status = 'IN_PROGRESS' THEN 1 ELSE 0 END) as inProgress,
+        SUM(CASE WHEN t.status = 'TODO' THEN 1 ELSE 0 END) as todo
+    )
+    FROM Task t
+    WHERE t.user.email = :email
+    """)
+    Map<String, Long> getTaskStatsByUserEmail(@Param("email") String email);
 }

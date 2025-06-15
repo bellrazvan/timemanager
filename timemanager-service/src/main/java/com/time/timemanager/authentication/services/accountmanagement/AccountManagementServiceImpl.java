@@ -4,9 +4,9 @@ import com.time.timemanager.authentication.*;
 import com.time.timemanager.authentication.dtos.ReactivateUserRequest;
 import com.time.timemanager.authentication.dtos.UserDetailsResponse;
 import com.time.timemanager.config.ApiResponseMapper;
-import com.time.timemanager.tasks.Status;
-import com.time.timemanager.tasks.Task;
+import com.time.timemanager.tasks.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -14,17 +14,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AccountManagementServiceImpl implements AccountManagementService {
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
 
     @Override
     public ResponseEntity<?> deleteUser(final Authentication auth) {
@@ -83,32 +84,21 @@ public class AccountManagementServiceImpl implements AccountManagementService {
         return ResponseEntity.ok(Map.of("status", status.name()));
     }
 
-
     @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "userDetails", key = "#auth.name")
     public ResponseEntity<?> getUserDetails(final Authentication auth) {
         try {
             final User user = this.getUserFromAuth(auth);
-            final List<Task> taskList = user.getTasks();
-            final long totalTasks = taskList.size();
-            final long totalDoneTasks = taskList.stream()
-                    .filter(task ->
-                            task.getStatus() == Status.DONE)
-                    .count();
-            final long totalInProgressTasks = taskList.stream()
-                    .filter(task ->
-                            task.getStatus() == Status.IN_PROGRESS)
-                    .count();
-            final long totalToDoTasks = taskList.stream()
-                    .filter(task ->
-                            task.getStatus() == Status.TODO)
-                    .count();
+            final Map<String, Long> stats = this.taskRepository.getTaskStatsByUserEmail(user.getEmail());
+
             final UserDetailsResponse userDetailsResponse = new UserDetailsResponse(
                     user.getUsername(),
                     user.getEmail(),
-                    totalTasks,
-                    totalDoneTasks,
-                    totalInProgressTasks,
-                    totalToDoTasks
+                    stats.get("total"),
+                    stats.get("done"),
+                    stats.get("inProgress"),
+                    stats.get("todo")
             );
             return ResponseEntity.ok(userDetailsResponse);
         } catch (IllegalArgumentException e) {

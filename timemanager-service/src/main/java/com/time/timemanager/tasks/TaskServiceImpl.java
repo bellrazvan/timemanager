@@ -9,6 +9,8 @@ import com.time.timemanager.tasks.dtos.TaskUpdateRequest;
 import com.time.timemanager.tasks.services.read.TaskReadService;
 import com.time.timemanager.tasks.services.update.TaskUpdateService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,11 +25,13 @@ public class TaskServiceImpl implements TaskService {
     private final TaskReadService taskReadService;
 
     @Override
+    @CacheEvict(value = "tasks", key = "#email")
     public TaskResponse createTask(final TaskCreateRequest request, final String email) {
         return this.taskCreateService.createTask(request, email);
     }
 
     @Override
+    @Cacheable(value = "tasks", key = "#email")
     public List<TaskListResponse> getTasks(final String email) {
         return this.taskReadService.getTasks(email);
     }
@@ -43,11 +47,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @CacheEvict(value = "tasks", key = "#email")
     public TaskResponse updateTask(final Long id, final TaskUpdateRequest request, final String email) {
         return this.taskUpdateService.updateTask(id, request, email);
     }
 
     @Override
+    @CacheEvict(value = "tasks", key = "#email")
     public void deleteTask(final Long id, final String email) {
         this.taskDeleteService.deleteTask(id, email);
     }

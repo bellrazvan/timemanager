@@ -1,5 +1,6 @@
 package com.time.timemanager.authentication;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param email the email address of the User to find
      * @return an Optional containing the found User, or empty if no User was found
      */
+    @Cacheable("users")
     Optional<User> findByEmail(String email);
 
     /**
