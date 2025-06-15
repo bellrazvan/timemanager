@@ -1,6 +1,6 @@
 .profile-container {
   max-width: 59%;
-  min-height: calc(100vh - 160px);
+  min-height: 88vh;
   width: 100%;
   margin: 48px auto 48px auto;
   padding: 32px 28px 24px 28px;
@@ -51,6 +51,12 @@
 
 .profile-stats li {
   margin-bottom: 1rem;
+}
+
+.loading {
+  color: #888;
+  font-size: 1.1rem;
+  text-align: center;
 }
 
 .error {

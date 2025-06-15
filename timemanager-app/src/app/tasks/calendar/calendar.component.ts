@@ -181,6 +181,7 @@ export class CalendarComponent implements OnInit {
         this.openedFromCalendar = true;
       },
       error: () => {
+        this.error = 'Failed to load task details';
       }
     });
   }

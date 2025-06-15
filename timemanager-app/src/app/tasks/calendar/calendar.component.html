@@ -9,16 +9,15 @@
   </div>
   <div class="page-container calendar-container">
     <h2>Task Calendar</h2>
-
-    <div *ngIf="loading" class="loading">Loading...</div>
-    <div *ngIf="error" class="error">{{ error }}</div>
-    <h3>{{ monthNames[currentMonth] }} {{ currentYear }}</h3>
+    <h3 *ngIf="!loading">{{ monthNames[currentMonth] }} {{ currentYear }}</h3>
     <div class="calendar">
-      <div class="calendar-row calendar-header">
+      <div *ngIf="!loading" class="calendar-row calendar-header">
         <div *ngFor="let day of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" class="calendar-cell header">
           {{ day }}
         </div>
       </div>
+      <div *ngIf="loading" class="loading">Loading...</div>
+      <div *ngIf="error" class="error">{{ error }}</div>
       <div class="calendar-row" *ngFor="let week of getCalendarWeeks()">
         <div *ngFor="let day of week" class="calendar-cell"
              [class.today]="day && !day.isOtherMonth && isToday(day.date)"
